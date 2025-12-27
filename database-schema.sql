@@ -6,11 +6,14 @@ CREATE TABLE IF NOT EXISTS users (
     id SERIAL PRIMARY KEY,
     wallet_address TEXT UNIQUE NOT NULL,
     full_name TEXT NOT NULL,
-    role INTEGER NOT NULL,
+    role TEXT NOT NULL,
     department TEXT,
     badge_number TEXT,
     jurisdiction TEXT,
-    registration_date TIMESTAMPTZ DEFAULT NOW(),
+    account_type TEXT DEFAULT 'real',
+    created_by TEXT,
+    created_at TIMESTAMPTZ DEFAULT NOW(),
+    last_updated TIMESTAMPTZ DEFAULT NOW(),
     is_active BOOLEAN DEFAULT TRUE
 );
 
@@ -51,17 +54,35 @@ CREATE TABLE IF NOT EXISTS activity_logs (
     ip_address TEXT
 );
 
+-- Admin actions table
+CREATE TABLE IF NOT EXISTS admin_actions (
+    id SERIAL PRIMARY KEY,
+    admin_wallet TEXT NOT NULL,
+    action_type TEXT NOT NULL,
+    target_wallet TEXT,
+    details JSONB,
+    timestamp TIMESTAMPTZ DEFAULT NOW()
+);
+
 -- Enable Row Level Security
 ALTER TABLE users ENABLE ROW LEVEL SECURITY;
 ALTER TABLE evidence ENABLE ROW LEVEL SECURITY;
 ALTER TABLE cases ENABLE ROW LEVEL SECURITY;
 ALTER TABLE activity_logs ENABLE ROW LEVEL SECURITY;
+ALTER TABLE admin_actions ENABLE ROW LEVEL SECURITY;
 
--- Create policies (allow all for demo)
+-- Create policies (allow all for demo) - Drop if exists first
+DROP POLICY IF EXISTS "Allow all operations" ON users;
+DROP POLICY IF EXISTS "Allow all operations" ON evidence;
+DROP POLICY IF EXISTS "Allow all operations" ON cases;
+DROP POLICY IF EXISTS "Allow all operations" ON activity_logs;
+DROP POLICY IF EXISTS "Allow all operations" ON admin_actions;
+
 CREATE POLICY "Allow all operations" ON users FOR ALL USING (true);
 CREATE POLICY "Allow all operations" ON evidence FOR ALL USING (true);
 CREATE POLICY "Allow all operations" ON cases FOR ALL USING (true);
 CREATE POLICY "Allow all operations" ON activity_logs FOR ALL USING (true);
+CREATE POLICY "Allow all operations" ON admin_actions FOR ALL USING (true);
 
 -- Create indexes
 CREATE INDEX IF NOT EXISTS idx_users_wallet ON users(wallet_address);

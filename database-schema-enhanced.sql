@@ -90,9 +90,9 @@ CREATE INDEX IF NOT EXISTS idx_users_account_type ON users(account_type);
 CREATE INDEX IF NOT EXISTS idx_admin_actions_admin ON admin_actions(admin_wallet);
 CREATE INDEX IF NOT EXISTS idx_admin_actions_timestamp ON admin_actions(timestamp);
 
--- Insert first admin (replace with actual wallet address)
+-- Insert first admin (replace with YOUR actual wallet address)
 INSERT INTO users (wallet_address, full_name, role, department, jurisdiction, account_type, created_by) 
-VALUES ('0x1234567890123456789012345678901234567890', 'System Administrator', 'admin', 'IT Department', 'System', 'real', 'system')
+VALUES ('YOUR_METAMASK_WALLET_ADDRESS_HERE', 'System Administrator', 'admin', 'IT Department', 'System', 'real', 'system')
 ON CONFLICT (wallet_address) DO NOTHING;
 
 -- Function to update timestamp
