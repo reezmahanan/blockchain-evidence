@@ -1,4 +1,5 @@
 // Clean Evidence Management System - Enhanced with Admin Management
+/* global trackUserAction, trackEvent */
 let userAccount;
 
 const roleNames = {
@@ -25,6 +26,9 @@ async function initializeApp() {
     if (regForm) regForm.addEventListener('submit', handleRegistration);
     if (dashBtn) dashBtn.addEventListener('click', goToDashboard);
 
+    // Initialize hamburger menu
+    initializeHamburgerMenu();
+
     // Auto-connect if MetaMask is available
     if (window.ethereum) {
         try {
@@ -38,11 +42,31 @@ async function initializeApp() {
     }
 }
 
+// Initialize hamburger menu
+function initializeHamburgerMenu() {
+    const menuToggle = document.getElementById('menuToggle');
+    const navMenu = document.getElementById('navMenu');
+
+    if (menuToggle && navMenu) {
+        menuToggle.addEventListener('click', () => {
+            navMenu.classList.toggle('active');
+        });
+        
+        // Close menu when link is clicked
+        const navLinks = navMenu.querySelectorAll('.nav-link');
+        navLinks.forEach(link => {
+            link.addEventListener('click', () => {
+                navMenu.classList.remove('active');
+            });
+        });
+    }
+}
+
 async function connectWallet() {
     try {
         showLoading(true);
         
-        // Track wallet connection attempt
+        // Track wallet connection attempt (safe check)
         if (typeof trackUserAction === 'function') {
             trackUserAction('wallet_connect_attempt', 'authentication');
         }
@@ -67,7 +91,7 @@ async function connectWallet() {
         updateWalletUI();
         await checkRegistrationStatus();
         
-        // Track successful wallet connection
+        // Track successful wallet connection (safe check)
         if (typeof trackUserAction === 'function') {
             trackUserAction('wallet_connected', 'authentication');
         }
@@ -78,7 +102,7 @@ async function connectWallet() {
         console.error('Wallet connection error:', error);
         showAlert('Failed to connect wallet: ' + error.message, 'error');
         
-        // Track wallet connection failure
+        // Track wallet connection failure (safe check)
         if (typeof trackUserAction === 'function') {
             trackUserAction('wallet_connect_failed', 'authentication');
         }
@@ -105,11 +129,11 @@ async function checkRegistrationStatus() {
             return;
         }
         
-        // Check database for user first (primary source)
+        // Check database for user first (primary source) - safe check
         let userInfo = null;
-        if (typeof storage !== 'undefined') {
+        if (typeof window.storage !== 'undefined' && window.storage) {
             try {
-                userInfo = await storage.getUser(userAccount);
+                userInfo = await window.storage.getUser(userAccount);
             } catch (error) {
                 console.log('Database not available, checking localStorage');
             }
@@ -245,8 +269,8 @@ async function handleRegistration(event) {
         localStorage.setItem('evidUser_' + userAccount, JSON.stringify(formData));
         localStorage.setItem('currentUser', userAccount);
         
-        // Try to save to database if available
-        if (typeof storage !== 'undefined') {
+        // Try to save to database if available - safe check
+        if (typeof window.storage !== 'undefined' && window.storage) {
             try {
                 const userData = {
                     walletAddress: userAccount,
@@ -258,14 +282,14 @@ async function handleRegistration(event) {
                     accountType: 'real',
                     createdBy: 'self'
                 };
-                await storage.saveUser(userData);
+                await window.storage.saveUser(userData);
                 console.log('User saved to database');
             } catch (error) {
                 console.log('Database save failed, using localStorage only');
             }
         }
         
-        // Track successful registration
+        // Track successful registration (safe check)
         if (typeof trackEvent === 'function') {
             trackEvent('user_registration', {
                 event_category: 'registration',
@@ -370,6 +394,7 @@ function getRoleClass(role) {
     return roleClasses[role] || 'public';
 }
 
+// eslint-disable-next-line no-unused-vars
 function logout() {
     // Clear all stored data
     localStorage.clear();
@@ -390,6 +415,7 @@ function logout() {
     window.location.replace('index.html');
 }
 
+// eslint-disable-next-line no-unused-vars
 function disconnectWallet() {
     // Clear wallet connection
     userAccount = null;
@@ -458,13 +484,14 @@ document.addEventListener('DOMContentLoaded', function() {
             const role = this.dataset.role;
             if (userRoleInput) userRoleInput.value = role;
             
-            // Track role selection
+            // Track role selection (safe check)
             if (typeof trackUserAction === 'function') {
-                const roleName = roleNames[parseInt(role)] || 'Unknown';
                 trackUserAction('role_selected', 'registration');
+            }
+            if (typeof trackEvent === 'function') {
                 trackEvent('role_selection', {
                     event_category: 'registration',
-                    role_type: roleName,
+                    role_type: roleNames[parseInt(role)] || 'Unknown',
                     role_id: role
                 });
             }
