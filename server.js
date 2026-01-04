@@ -10,6 +10,9 @@ const auditLoggerService = require('./services/auditLogger.service');
 const { evidenceAuditMiddleware, logEvidenceAction } = require('./middlewares/auditLogger.middleware');
 const auditLogsRoutes = require('./routes/auditLogs.routes');
 
+// Auth routes
+const authRoutes = require('./routes/auth.routes');
+
 const app = express();
 const PORT = process.env.PORT || 3001;
 
