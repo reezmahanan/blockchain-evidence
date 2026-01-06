@@ -3,142 +3,522 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>🔐 EVID-DGC Dashboard</title>
-    <link rel="stylesheet" href="styles.css">
+    
+    <!-- SEO Meta Tags -->
+    <title>EVID-DGC Dashboard | Blockchain Evidence Management</title>
+    <meta name="description" content="Access your role-specific dashboard for secure evidence management and blockchain operations.">
+    <meta name="robots" content="noindex, nofollow">
+    
+    <link rel="stylesheet" href="styles.css?v=8">
+    <link rel="icon" href="/favicon.ico" type="image/x-icon">
+    
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
     
     <!-- Google Analytics -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-KEYDE0ZH4Z"></script>
     <script>
-      window.dataLayer = window.dataLayer || [];
-      function gtag(){dataLayer.push(arguments);}
-      gtag('js', new Date());
-      gtag('config', 'G-KEYDE0ZH4Z');
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'G-KEYDE0ZH4Z');
     </script>
 </head>
 <body>
+    <!-- Professional Navigation -->
+    <nav class="navbar">
+        <div class="navbar-left">
+            <div class="navbar-brand">
+                <i data-lucide="shield-check"></i>
+                <span>EVID-DGC</span>
+            </div>
+        </div>
+
+        <div class="navbar-right">
+            <div class="user-info-nav">
+                <span class="user-role" id="userRole">Loading...</span>
+                <span class="user-wallet" id="userWallet">0x****...****</span>
+            </div>
+            <button class="logout-btn" id="logoutBtn">
+                <i data-lucide="log-out"></i>
+                <span>Logout</span>
+            </button>
+        </div>
+    </nav>
+
     <div class="container">
-        <div class="text-center p-8">
-            <div class="loading mb-4"></div>
-            <h2>🔄 Redirecting to your dashboard...</h2>
-            <p>Please wait while we load your role-specific interface.</p>
+        <!-- Loading State -->
+        <div id="loadingState" class="dashboard-loading">
+            <div class="loading-content">
+                <div class="loading-icon">
+                    <i data-lucide="loader"></i>
+                </div>
+                <h2>Loading Dashboard</h2>
+                <p>Please wait while we prepare your role-specific interface...</p>
+                <div class="loading-progress">
+                    <div class="progress-bar">
+                        <div class="progress-fill"></div>
+                    </div>
+                    <span class="progress-text">Authenticating user...</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Error State -->
+        <div id="errorState" class="dashboard-error hidden">
+            <div class="error-content">
+                <div class="error-icon">
+                    <i data-lucide="alert-triangle"></i>
+                </div>
+                <h2>Access Error</h2>
+                <p id="errorMessage">Unable to load dashboard. Please try again.</p>
+                <div class="error-actions">
+                    <button onclick="retryDashboardLoad()" class="btn btn-primary">
+                        <i data-lucide="refresh-cw"></i>
+                        Retry
+                    </button>
+                    <button onclick="goToLogin()" class="btn btn-outline">
+                        <i data-lucide="arrow-left"></i>
+                        Back to Login
+                    </button>
+                </div>
+            </div>
         </div>
     </div>
 
-    <script src="config.js"></script>
-    <script src="storage.js"></script>
+    <script src="config.js?v=8"></script>
+    <script src="storage.js?v=8"></script>
+    <script src="role-navigation.js"></script>
     <script src="analytics.js"></script>
     <script>
-        document.addEventListener('DOMContentLoaded', async function() {
-            await routeToRoleDashboard();
+        // Role mapping for dashboard routing
+        const ROLE_DASHBOARDS = {
+            // String-based roles
+            'admin': 'admin.html',
+            'investigator': 'dashboard-investigator.html',
+            'forensic_analyst': 'dashboard-analyst.html',
+            'legal_professional': 'dashboard-legal.html',
+            'court_official': 'dashboard-court.html',
+            'evidence_manager': 'dashboard-manager.html',
+            'auditor': 'dashboard-auditor.html',
+            'public_viewer': 'dashboard-public.html',
+            
+            // Number-based roles (for backward compatibility)
+            1: 'dashboard-public.html',
+            2: 'dashboard-investigator.html',
+            3: 'dashboard-analyst.html',
+            4: 'dashboard-legal.html',
+            5: 'dashboard-court.html',
+            6: 'dashboard-manager.html',
+            7: 'dashboard-auditor.html',
+            8: 'admin.html'
+        };
+
+        const ROLE_NAMES = {
+            'admin': 'Administrator',
+            'investigator': 'Investigator',
+            'forensic_analyst': 'Forensic Analyst',
+            'legal_professional': 'Legal Professional',
+            'court_official': 'Court Official',
+            'evidence_manager': 'Evidence Manager',
+            'auditor': 'Auditor',
+            'public_viewer': 'Public Viewer',
+            1: 'Public Viewer',
+            2: 'Investigator',
+            3: 'Forensic Analyst',
+            4: 'Legal Professional',
+            5: 'Court Official',
+            6: 'Evidence Manager',
+            7: 'Auditor',
+            8: 'Administrator'
+        };
+
+        let progressInterval;
+
+        document.addEventListener('DOMContentLoaded', function() {
+            lucide.createIcons();
+            initializeDashboard();
         });
 
-        async function routeToRoleDashboard() {
+        async function initializeDashboard() {
             try {
+                updateProgress('Initializing dashboard...', 10);
+                
+                // Initialize logout button
+                const logoutBtn = document.getElementById('logoutBtn');
+                if (logoutBtn) {
+                    logoutBtn.addEventListener('click', logout);
+                }
+
+                updateProgress('Checking authentication...', 30);
+                await new Promise(resolve => setTimeout(resolve, 500));
+
                 const userAccount = localStorage.getItem('currentUser');
                 console.log('Dashboard router - userAccount:', userAccount);
                 
                 if (!userAccount) {
-                    console.log('No user account found, redirecting to index');
-                    window.location.href = 'index.html';
-                    return;
+                    throw new Error('No user account found. Please log in again.');
                 }
+
+                updateProgress('Loading user profile...', 50);
+                await new Promise(resolve => setTimeout(resolve, 500));
 
                 // Get user data
-                let userInfo = null;
+                let userInfo = await getUserInfo(userAccount);
                 
-                // Try database first
-                if (typeof storage !== 'undefined') {
-                    try {
-                        userInfo = await storage.getUser(userAccount);
-                        console.log('User info from database:', userInfo);
-                    } catch (error) {
-                        console.log('Database not available, checking localStorage');
-                    }
-                }
-
-                // Fallback to localStorage
                 if (!userInfo) {
-                    const savedUser = localStorage.getItem('evidUser_' + userAccount);
-                    if (savedUser) {
-                        userInfo = JSON.parse(savedUser);
-                        console.log('User info from localStorage:', userInfo);
-                    }
+                    throw new Error('User profile not found. Please register again.');
                 }
 
-                if (!userInfo) {
-                    console.log('No user info found, redirecting to index');
-                    window.location.href = 'index.html';
-                    return;
-                }
-
-                // Route based on role
-                const role = userInfo.role;
-                console.log('User role:', role);
-                let dashboardUrl = 'dashboard-public.html'; // default
-
-                switch (role) {
-                    case 'admin':
-                    case 8:
-                        dashboardUrl = 'admin.html';
-                        break;
-                    case 'investigator':
-                    case 2:
-                        dashboardUrl = 'dashboard-investigator.html';
-                        break;
-                    case 'forensic_analyst':
-                    case 3:
-                        dashboardUrl = 'dashboard-analyst.html';
-                        break;
-                    case 'legal_professional':
-                    case 4:
-                        dashboardUrl = 'dashboard-legal.html';
-                        break;
-                    case 'court_official':
-                    case 5:
-                        dashboardUrl = 'dashboard-court.html';
-                        break;
-                    case 'evidence_manager':
-                    case 6:
-                        dashboardUrl = 'dashboard-manager.html';
-                        break;
-                    case 'auditor':
-                    case 7:
-                        dashboardUrl = 'dashboard-auditor.html';
-                        break;
-                    case 'public_viewer':
-                    case 1:
-                    default:
-                        dashboardUrl = 'dashboard-public.html';
-                        break;
-                }
-
-                console.log(`Redirecting ${role} to ${dashboardUrl}`);
+                updateProgress('Preparing dashboard...', 70);
                 
-                // Add a small delay to ensure the redirect is visible
+                // Initialize role-based navigation
+                if (window.RoleNavigation) {
+                    window.RoleNavigation.initializeRoleNavigation();
+                }
+                
+                // Update navbar with user info
+                updateNavbarUserInfo(userInfo, userAccount);
+
+                updateProgress('Redirecting to dashboard...', 90);
+                await new Promise(resolve => setTimeout(resolve, 500));
+
+                // Route to appropriate dashboard
+                const dashboardUrl = getDashboardUrl(userInfo.role);
+                console.log(`Redirecting ${userInfo.role} to ${dashboardUrl}`);
+                
+                // Track dashboard access
+                if (typeof gtag === 'function') {
+                    gtag('event', 'dashboard_access', {
+                        'user_role': ROLE_NAMES[userInfo.role] || 'Unknown',
+                        'dashboard_url': dashboardUrl
+                    });
+                }
+
+                updateProgress('Complete!', 100);
+                
                 setTimeout(() => {
                     window.location.href = dashboardUrl;
-                }, 500);
+                }, 300);
 
             } catch (error) {
-                console.error('Dashboard routing error:', error);
-                alert('Error loading dashboard. Please try logging in again.');
-                window.location.href = 'index.html';
+                console.error('Dashboard initialization error:', error);
+                showError(error.message);
             }
         }
+
+        async function getUserInfo(userAccount) {
+            let userInfo = null;
+            
+            // Try database first (if available)
+            if (typeof storage !== 'undefined') {
+                try {
+                    userInfo = await storage.getUser(userAccount);
+                    console.log('User info from database:', userInfo);
+                } catch (error) {
+                    console.log('Database not available, checking localStorage');
+                }
+            }
+
+            // Fallback to localStorage
+            if (!userInfo) {
+                const savedUser = localStorage.getItem('evidUser_' + userAccount);
+                if (savedUser) {
+                    userInfo = JSON.parse(savedUser);
+                    console.log('User info from localStorage:', userInfo);
+                }
+            }
+
+            return userInfo;
+        }
+
+        function getDashboardUrl(role) {
+            return ROLE_DASHBOARDS[role] || 'dashboard-public.html';
+        }
+
+        function updateNavbarUserInfo(userInfo, userAccount) {
+            const userRoleEl = document.getElementById('userRole');
+            const userWalletEl = document.getElementById('userWallet');
+
+            if (userRoleEl) {
+                userRoleEl.textContent = ROLE_NAMES[userInfo.role] || 'User';
+            }
+
+            if (userWalletEl && userAccount) {
+                userWalletEl.textContent = truncateWallet(userAccount);
+            }
+        }
+
+        function truncateWallet(address) {
+            if (!address) return '0x****...****';
+            return address.slice(0, 6) + '...' + address.slice(-4);
+        }
+
+        function updateProgress(message, percentage) {
+            const progressText = document.querySelector('.progress-text');
+            const progressFill = document.querySelector('.progress-fill');
+            
+            if (progressText) {
+                progressText.textContent = message;
+            }
+            
+            if (progressFill) {
+                progressFill.style.width = percentage + '%';
+            }
+        }
+
+        function showError(message) {
+            const loadingState = document.getElementById('loadingState');
+            const errorState = document.getElementById('errorState');
+            const errorMessage = document.getElementById('errorMessage');
+
+            if (loadingState) loadingState.classList.add('hidden');
+            if (errorState) errorState.classList.remove('hidden');
+            if (errorMessage) errorMessage.textContent = message;
+
+            // Track error
+            if (typeof gtag === 'function') {
+                gtag('event', 'dashboard_error', {
+                    'error_message': message
+                });
+            }
+        }
+
+        function retryDashboardLoad() {
+            const loadingState = document.getElementById('loadingState');
+            const errorState = document.getElementById('errorState');
+
+            if (loadingState) loadingState.classList.remove('hidden');
+            if (errorState) errorState.classList.add('hidden');
+
+            // Reset progress
+            updateProgress('Retrying...', 0);
+            
+            // Retry after a short delay
+            setTimeout(() => {
+                initializeDashboard();
+            }, 500);
+        }
+
+        function goToLogin() {
+            window.location.href = 'index.html';
+        }
+
+        function logout() {
+            // Track logout
+            if (typeof gtag === 'function') {
+                gtag('event', 'user_logout', {
+                    'source': 'dashboard_router'
+                });
+            }
+
+            // Clear all user data
+            localStorage.clear();
+            
+            // Redirect to login
+            window.location.href = 'index.html';
+        }
+
+        // Add some CSS for the loading and error states
+        const style = document.createElement('style');
+        style.textContent = `
+            .dashboard-loading, .dashboard-error {
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                min-height: 70vh;
+                text-align: center;
+            }
+
+            .loading-content, .error-content {
+                max-width: 400px;
+                padding: 40px;
+                background: var(--white);
+                border-radius: 16px;
+                box-shadow: var(--shadow-medium);
+                border: 1px solid var(--border-light);
+            }
+
+            .loading-icon, .error-icon {
+                margin-bottom: 24px;
+            }
+
+            .loading-icon i {
+                width: 48px;
+                height: 48px;
+                color: var(--primary-red);
+                animation: spin 1s linear infinite;
+            }
+
+            .error-icon i {
+                width: 48px;
+                height: 48px;
+                color: var(--error-color);
+            }
+
+            .loading-content h2, .error-content h2 {
+                color: var(--text-primary);
+                font-size: 1.5rem;
+                margin-bottom: 12px;
+                font-weight: 700;
+            }
+
+            .loading-content p, .error-content p {
+                color: var(--text-secondary);
+                margin-bottom: 24px;
+                line-height: 1.6;
+            }
+
+            .loading-progress {
+                margin-top: 32px;
+            }
+
+            .progress-bar {
+                width: 100%;
+                height: 6px;
+                background: var(--light-gray);
+                border-radius: 3px;
+                overflow: hidden;
+                margin-bottom: 12px;
+            }
+
+            .progress-fill {
+                height: 100%;
+                background: var(--primary-red);
+                border-radius: 3px;
+                transition: width 0.3s ease;
+                width: 0%;
+            }
+
+            .progress-text {
+                font-size: 0.9rem;
+                color: var(--text-muted);
+            }
+
+            .error-actions {
+                display: flex;
+                gap: 12px;
+                justify-content: center;
+                flex-wrap: wrap;
+            }
+
+            .navbar {
+                background: var(--white);
+                border-bottom: 1px solid var(--border-light);
+                padding: 16px 24px;
+                box-shadow: var(--shadow-light);
+                position: sticky;
+                top: 0;
+                z-index: 100;
+            }
+
+            .navbar-left, .navbar-right {
+                display: flex;
+                align-items: center;
+                gap: 16px;
+            }
+
+            .navbar {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+            }
+
+            .navbar-brand {
+                display: flex;
+                align-items: center;
+                gap: 12px;
+                font-size: 1.5rem;
+                font-weight: 800;
+                color: var(--primary-red);
+            }
+
+            .navbar-brand i {
+                width: 28px;
+                height: 28px;
+            }
+
+            .user-info-nav {
+                display: flex;
+                align-items: center;
+                gap: 12px;
+            }
+
+            .user-role {
+                background: var(--primary-red);
+                color: var(--white);
+                padding: 6px 12px;
+                border-radius: 20px;
+                font-size: 0.8rem;
+                font-weight: 600;
+                text-transform: uppercase;
+            }
+
+            .user-wallet {
+                font-family: 'JetBrains Mono', monospace;
+                font-size: 0.85rem;
+                color: var(--text-muted);
+                background: var(--light-gray);
+                padding: 6px 10px;
+                border-radius: 6px;
+                border: 1px solid var(--border-light);
+            }
+
+            .logout-btn {
+                display: flex;
+                align-items: center;
+                gap: 6px;
+                background: var(--error-color);
+                color: var(--white);
+                border: none;
+                padding: 8px 16px;
+                border-radius: 8px;
+                cursor: pointer;
+                font-weight: 500;
+                transition: all 0.2s ease;
+            }
+
+            .logout-btn:hover {
+                background: #DC2626;
+                transform: translateY(-1px);
+            }
+
+            .logout-btn i {
+                width: 16px;
+                height: 16px;
+            }
+
+            @media (max-width: 768px) {
+                .navbar {
+                    flex-direction: column;
+                    gap: 12px;
+                    align-items: stretch;
+                }
+
+                .navbar-left, .navbar-right {
+                    justify-content: center;
+                }
+
+                .user-wallet {
+                    display: none;
+                }
+
+                .loading-content, .error-content {
+                    margin: 20px;
+                    padding: 24px;
+                }
+
+                .error-actions {
+                    flex-direction: column;
+                }
+            }
+
+            @keyframes spin {
+                0% { transform: rotate(0deg); }
+                100% { transform: rotate(360deg); }
+            }
+        `;
+        document.head.appendChild(style);
     </script>
 </body>
-<nav class="navbar">
-  <div class="navbar-left">
-    <h2 class="navbar-logo" onclick="window.location.href='dashboard.html'">
-      🔐 EVID-DGC
-    </h2>
-  </div>
-
-  <div class="navbar-right">
-    <span class="user-role" id="userRole">Role</span>
-    <span class="user-wallet" id="userWallet">0x****...abc</span>
-    <button class="logout-btn" id="logoutBtn">Logout</button>
-  </div>
-</nav>
-
 </html>

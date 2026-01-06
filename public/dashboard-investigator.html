@@ -3,240 +3,293 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>🕵️ Investigator Dashboard - Evid-DGC</title>
-    <link rel="stylesheet" href="styles.css?v=7">
-    <script src="https://cdn.jsdelivr.net/npm/web3@1.8.0/dist/web3.min.js"></script>
-    <script src="config.js?v=7"></script>
-    <script src="storage.js?v=7"></script>
-    <script src="analytics.js"></script>
-    <script src="dashboard-manager.js?v=7"></script>
+    <title>🕵️ Investigator Dashboard - EVID-DGC</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+    <style>
+        .investigator-hero {
+            background: linear-gradient(135deg, #1e3a8a, #3b82f6);
+            color: white;
+            padding: 40px 0;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .hero-content h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+        .hero-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-top: 30px;
+        }
+        .stat-card {
+            background: rgba(255,255,255,0.1);
+            padding: 20px;
+            border-radius: 12px;
+            backdrop-filter: blur(10px);
+        }
+        .stat-number {
+            font-size: 2rem;
+            font-weight: bold;
+            display: block;
+        }
+        .quick-actions {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        .action-card {
+            background: white;
+            border-radius: 12px;
+            padding: 25px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            border: 1px solid #e5e7eb;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        .action-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+        }
+        .action-icon {
+            font-size: 2.5rem;
+            margin-bottom: 15px;
+            display: block;
+        }
+        .cases-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+        }
+        .case-card {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            border-left: 4px solid #3b82f6;
+        }
+        .case-header {
+            display: flex;
+            justify-content: between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        .status-badge {
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+        .status-open { background: #dbeafe; color: #1e40af; }
+        .status-analyzing { background: #fef3c7; color: #92400e; }
+        .status-closed { background: #d1fae5; color: #065f46; }
+    </style>
 </head>
 <body>
-    <!-- Top Navigation -->
-    <nav class="dashboard-nav">
-        <div class="container">
-            <div class="nav-content">
-                <a href="index.html" class="nav-brand">🔐 EVID-DGC</a>
-                <div class="nav-items">
-                    <span id="userRole" class="badge badge-investigator">🕵️ Investigator</span>
-                    <span id="userWallet" class="wallet-display">Loading...</span>
-                    <button class="btn btn-outline btn-sm" onclick="logout()">🚪 Logout</button>
-                </div>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="navbar-left">
+            <div class="navbar-brand">
+                <i data-lucide="shield-check"></i>
+                <span>EVID-DGC</span>
             </div>
+        </div>
+        <div class="navbar-right">
+            <div class="user-info-nav">
+                <span class="user-role" id="userRole">🕵️ Investigator</span>
+                <span class="user-wallet" id="userWallet">Loading...</span>
+            </div>
+            <button class="logout-btn" onclick="logout()">
+                <i data-lucide="log-out"></i>
+                <span>Logout</span>
+            </button>
         </div>
     </nav>
 
-    <div class="container">
-        <!-- Dashboard Hero -->
-        <div class="dashboard-hero">
-            <h1>🕵️ Investigator Dashboard</h1>
-            <p>Create and manage investigations with blockchain security</p>
-            <div class="hero-stats">
-                <div class="hero-stat">
-                    <span class="stat-icon">📁</span>
-                    <span class="stat-text" id="activeCases">0 Active Cases</span>
-                </div>
-                <div class="hero-stat">
-                    <span class="stat-icon">⏳</span>
-                    <span class="stat-text" id="pendingAnalysis">0 Pending Analysis</span>
-                </div>
-                <div class="hero-stat">
-                    <span class="stat-icon">⚖️</span>
-                    <span class="stat-text" id="awaitingLegal">0 Awaiting Legal Review</span>
+    <!-- Hero Section -->
+    <div class="investigator-hero">
+        <div class="container">
+            <div class="hero-content">
+                <h1>🕵️ Investigator Dashboard</h1>
+                <p>Manage investigations with blockchain-secured evidence integrity</p>
+                <div class="hero-stats">
+                    <div class="stat-card">
+                        <span class="stat-number" id="activeCases">5</span>
+                        <span>Active Cases</span>
+                    </div>
+                    <div class="stat-card">
+                        <span class="stat-number" id="evidenceItems">23</span>
+                        <span>Evidence Items</span>
+                    </div>
+                    <div class="stat-card">
+                        <span class="stat-number" id="pendingReviews">3</span>
+                        <span>Pending Reviews</span>
+                    </div>
                 </div>
             </div>
         </div>
+    </div>
 
+    <div class="container">
         <!-- Quick Actions -->
         <div class="card">
             <div class="card-header">
                 <h2>🚀 Quick Actions</h2>
+                <p>Essential investigator tools and functions</p>
             </div>
             <div class="card-body">
-                <div class="btn-group">
-                    <button class="btn btn-primary" onclick="showCreateCaseForm()">
-                        ➕ Create New Case
-                    </button>
-                    <button class="btn btn-outline" onclick="showMyCases()">
-                        📋 My Cases
-                    </button>
-                    <button class="btn btn-outline" onclick="showUploadEvidence()">
-                        📤 Upload Evidence
-                    </button>
-                    <button class="btn btn-outline" onclick="showAuditTrail()">
-                        📊 Audit Trail
-                    </button>
-                </div>
-            </div>
-        </div>
-
-        <!-- Action Required -->
-        <div id="actionRequired" class="card" style="display: none;">
-            <div class="card-header">
-                <h2>🔴 Action Required</h2>
-            </div>
-            <div class="card-body" id="actionItems">
-                <!-- Dynamic content loaded here -->
-            </div>
-        </div>
-
-        <!-- My Cases -->
-        <div id="myCasesSection" class="card">
-            <div class="card-header">
-                <h2>📋 My Cases</h2>
-                <button class="btn btn-outline btn-sm" onclick="refreshCases()">🔄 Refresh</button>
-            </div>
-            <div class="card-body">
-                <div id="casesList" class="cases-grid">
-                    <div class="text-center p-8">
-                        <div class="loading mb-4"></div>
-                        <p>Loading your cases...</p>
+                <div class="quick-actions">
+                    <div class="action-card" onclick="createNewCase()">
+                        <span class="action-icon">📁</span>
+                        <h3>Create New Case</h3>
+                        <p>Start a new investigation with secure case management</p>
+                    </div>
+                    <div class="action-card" onclick="uploadEvidence()">
+                        <span class="action-icon">📤</span>
+                        <h3>Upload Evidence</h3>
+                        <p>Add digital evidence with blockchain verification</p>
+                    </div>
+                    <div class="action-card" onclick="searchCases()">
+                        <span class="action-icon">🔍</span>
+                        <h3>Search Cases</h3>
+                        <p>Find and review existing investigations</p>
+                    </div>
+                    <div class="action-card" onclick="generateReport()">
+                        <span class="action-icon">📊</span>
+                        <h3>Generate Report</h3>
+                        <p>Create comprehensive investigation reports</p>
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- Recent Evidence Uploads -->
+        <!-- Recent Cases -->
         <div class="card">
             <div class="card-header">
-                <h2>📤 Recent Evidence Uploads</h2>
+                <h2>📋 Recent Cases</h2>
+                <button class="btn btn-outline btn-sm" onclick="refreshCases()">
+                    <i data-lucide="refresh-cw"></i>
+                    Refresh
+                </button>
             </div>
             <div class="card-body">
-                <div id="recentUploads" class="evidence-list">
-                    <div class="text-center p-4">
-                        <p class="text-muted">No recent uploads</p>
+                <div class="cases-grid" id="casesGrid">
+                    <div class="case-card">
+                        <div class="case-header">
+                            <h3>Burglary Investigation</h3>
+                            <span class="status-badge status-open">OPEN</span>
+                        </div>
+                        <p><strong>Case ID:</strong> INV-2024-001</p>
+                        <p><strong>Location:</strong> Downtown Office Building</p>
+                        <p><strong>Date:</strong> March 15, 2024</p>
+                        <div class="case-actions" style="margin-top: 15px;">
+                            <button class="btn btn-sm btn-primary">View Details</button>
+                            <button class="btn btn-sm btn-outline">Add Evidence</button>
+                        </div>
+                    </div>
+                    
+                    <div class="case-card">
+                        <div class="case-header">
+                            <h3>Fraud Investigation</h3>
+                            <span class="status-badge status-analyzing">ANALYZING</span>
+                        </div>
+                        <p><strong>Case ID:</strong> INV-2024-002</p>
+                        <p><strong>Location:</strong> Financial District</p>
+                        <p><strong>Date:</strong> March 12, 2024</p>
+                        <div class="case-actions" style="margin-top: 15px;">
+                            <button class="btn btn-sm btn-primary">View Details</button>
+                            <button class="btn btn-sm btn-outline">Request Analysis</button>
+                        </div>
+                    </div>
+                    
+                    <div class="case-card">
+                        <div class="case-header">
+                            <h3>Theft Investigation</h3>
+                            <span class="status-badge status-closed">CLOSED</span>
+                        </div>
+                        <p><strong>Case ID:</strong> INV-2024-003</p>
+                        <p><strong>Location:</strong> Retail Store</p>
+                        <p><strong>Date:</strong> March 10, 2024</p>
+                        <div class="case-actions" style="margin-top: 15px;">
+                            <button class="btn btn-sm btn-outline">View Report</button>
+                            <button class="btn btn-sm btn-outline">Archive</button>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
-    </div>
 
-    <!-- Create Case Modal -->
-    <div id="createCaseModal" class="modal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h2>➕ Create New Case</h2>
-                <button class="modal-close" onclick="closeModal()">&times;</button>
+        <!-- Evidence Management -->
+        <div class="card">
+            <div class="card-header">
+                <h2>🔬 Evidence Management</h2>
+                <p>Blockchain-secured evidence tracking</p>
             </div>
-            <div class="modal-body">
-                <form id="createCaseForm">
-                    <div class="form-group">
-                        <label for="caseTitle">Case Title *</label>
-                        <input type="text" id="caseTitle" class="form-control" placeholder="Brief case description" required>
+            <div class="card-body">
+                <div class="evidence-stats" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px;">
+                    <div class="stat-item" style="text-align: center; padding: 20px; background: #f8fafc; border-radius: 8px;">
+                        <div style="font-size: 2rem; color: #3b82f6;">📸</div>
+                        <div style="font-size: 1.5rem; font-weight: bold; margin: 10px 0;">12</div>
+                        <div>Photos</div>
                     </div>
-                    <div class="form-group">
-                        <label for="caseDescription">Description</label>
-                        <textarea id="caseDescription" class="form-control" rows="3" placeholder="Detailed case description"></textarea>
+                    <div class="stat-item" style="text-align: center; padding: 20px; background: #f8fafc; border-radius: 8px;">
+                        <div style="font-size: 2rem; color: #10b981;">📄</div>
+                        <div style="font-size: 1.5rem; font-weight: bold; margin: 10px 0;">8</div>
+                        <div>Documents</div>
                     </div>
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label for="crimeType">Crime Type</label>
-                            <select id="crimeType" class="form-control">
-                                <option value="">Select type</option>
-                                <option value="Assault">Assault</option>
-                                <option value="Burglary">Burglary</option>
-                                <option value="Fraud">Fraud</option>
-                                <option value="Theft">Theft</option>
-                                <option value="Other">Other</option>
-                            </select>
-                        </div>
-                        <div class="form-group">
-                            <label for="location">Location</label>
-                            <input type="text" id="location" class="form-control" placeholder="Incident location">
-                        </div>
+                    <div class="stat-item" style="text-align: center; padding: 20px; background: #f8fafc; border-radius: 8px;">
+                        <div style="font-size: 2rem; color: #f59e0b;">🎥</div>
+                        <div style="font-size: 1.5rem; font-weight: bold; margin: 10px 0;">3</div>
+                        <div>Videos</div>
                     </div>
-                    <div class="form-group">
-                        <label for="suspects">Suspects</label>
-                        <input type="text" id="suspects" class="form-control" placeholder="Known suspects (optional)">
+                    <div class="stat-item" style="text-align: center; padding: 20px; background: #f8fafc; border-radius: 8px;">
+                        <div style="font-size: 2rem; color: #ef4444;">🔒</div>
+                        <div style="font-size: 1.5rem; font-weight: bold; margin: 10px 0;">100%</div>
+                        <div>Verified</div>
                     </div>
-                    <div class="form-actions">
-                        <button type="submit" class="btn btn-success">✅ Create Case</button>
-                        <button type="button" class="btn btn-outline" onclick="closeModal()">Cancel</button>
-                    </div>
-                </form>
-            </div>
-        </div>
-    </div>
-
-    <!-- Case Detail Modal -->
-    <div id="caseModal" class="modal">
-        <div class="modal-content large">
-            <div class="modal-header">
-                <h2 id="caseModalTitle">Case Details</h2>
-                <button class="modal-close" onclick="closeModal()">&times;</button>
-            </div>
-            <div id="caseModalContent" class="modal-body">
-                <!-- Content loaded dynamically -->
+                </div>
             </div>
         </div>
     </div>
 
     <script>
-        // Investigator-specific dashboard logic
         let currentUser = null;
-        let userCases = [];
 
-        document.addEventListener('DOMContentLoaded', async function() {
-            await initializeInvestigatorDashboard();
+        document.addEventListener('DOMContentLoaded', function() {
+            lucide.createIcons();
+            initializeDashboard();
         });
 
-        async function initializeInvestigatorDashboard() {
+        async function initializeDashboard() {
             try {
-                // Get current user
-                const wallet = localStorage.getItem('currentUser');
-                if (!wallet) {
+                const userAccount = localStorage.getItem('currentUser');
+                if (!userAccount) {
                     window.location.href = 'index.html';
                     return;
                 }
 
-                // Load user data (handle both database and localStorage)
-                let userData = null;
-                try {
-                    const userResponse = await fetch(`/api/user/${wallet}`);
-                    const result = await userResponse.json();
-                    userData = result.user;
-                } catch (error) {
-                    console.log('API not available, checking storage');
-                }
-
-                // Fallback to storage.js
-                if (!userData && typeof storage !== 'undefined') {
-                    try {
-                        userData = await storage.getUser(wallet);
-                    } catch (error) {
-                        console.log('Database not available');
-                    }
-                }
-
-                // Fallback to localStorage
-                if (!userData) {
-                    const savedUser = localStorage.getItem('evidUser_' + wallet);
-                    if (savedUser) {
-                        userData = JSON.parse(savedUser);
-                    }
-                }
-
-                if (!userData) {
+                // Get user data from localStorage
+                let userData = JSON.parse(localStorage.getItem('evidUser_' + userAccount) || '{}');
+                
+                if (!userData.role) {
                     alert('User data not found. Please login again.');
                     logout();
                     return;
                 }
 
-                // Check role (handle both string and number formats)
-                const userRole = userData.role;
-                if (userRole !== 'investigator' && userRole !== 2) {
+                // Check if user has investigator role
+                if (userData.role !== 'investigator' && userData.role !== 2) {
                     alert('Access denied. Investigator role required.');
                     logout();
                     return;
                 }
 
                 currentUser = userData;
-                updateUserUI(currentUser);
-
-                // Load dashboard data (mock for now)
-                await loadDashboardStats();
-                await loadCases();
-                await loadActionItems();
+                updateUserInterface();
+                loadDashboardData();
 
             } catch (error) {
                 console.error('Dashboard initialization error:', error);
@@ -244,225 +297,52 @@
             }
         }
 
-        function updateUserUI(user) {
+        function updateUserInterface() {
             const isTestUser = localStorage.getItem('testUserMode') === 'true';
-            const userName = user.full_name || 'Investigator';
+            const userName = currentUser.fullName || 'Investigator';
             
-            document.getElementById('userRole').textContent = isTestUser ? `🕵️ ${userName} (Test)` : `🕵️ ${userName}`;
-            document.getElementById('userWallet').textContent = `${user.wallet_address.slice(0, 6)}...${user.wallet_address.slice(-4)}`;
-        }
-
-        async function loadDashboardStats() {
-            try {
-                // Mock stats for demo
-                const mockStats = {
-                    activeCases: 3,
-                    pendingAnalysis: 1,
-                    awaitingLegal: 2
-                };
-
-                document.getElementById('activeCases').textContent = `${mockStats.activeCases} Active Cases`;
-                document.getElementById('pendingAnalysis').textContent = `${mockStats.pendingAnalysis} Pending Analysis`;
-                document.getElementById('awaitingLegal').textContent = `${mockStats.awaitingLegal} Awaiting Legal Review`;
-            } catch (error) {
-                console.error('Stats loading error:', error);
+            document.getElementById('userRole').textContent = isTestUser ? 
+                `🕵️ ${userName} (Test)` : `🕵️ Investigator`;
+            
+            if (currentUser.walletAddress) {
+                document.getElementById('userWallet').textContent = 
+                    currentUser.walletAddress.slice(0, 6) + '...' + currentUser.walletAddress.slice(-4);
             }
         }
 
-        async function loadCases() {
-            try {
-                // Mock cases for demo
-                const mockCases = [
-                    {
-                        case_id: 'CASE-2024-001',
-                        title: 'Burglary Investigation',
-                        description: 'Break-in at downtown office building',
-                        status: 'OPEN',
-                        created_at: new Date().toISOString()
-                    },
-                    {
-                        case_id: 'CASE-2024-002', 
-                        title: 'Fraud Case',
-                        description: 'Financial fraud investigation',
-                        status: 'ANALYZING',
-                        created_at: new Date(Date.now() - 86400000).toISOString()
-                    }
-                ];
-                
-                userCases = mockCases;
-                renderCases(userCases);
-            } catch (error) {
-                console.error('Cases loading error:', error);
-                document.getElementById('casesList').innerHTML = '<p class="text-center text-muted">Failed to load cases</p>';
-            }
+        function loadDashboardData() {
+            // Simulate loading dashboard statistics
+            document.getElementById('activeCases').textContent = '5';
+            document.getElementById('evidenceItems').textContent = '23';
+            document.getElementById('pendingReviews').textContent = '3';
         }
 
-        function renderCases(cases) {
-            const container = document.getElementById('casesList');
-
-            if (cases.length === 0) {
-                container.innerHTML = '<p class="text-center text-muted">No cases found. Create your first case!</p>';
-                return;
-            }
-
-            const casesHtml = cases.map(caseItem => `
-                <div class="case-card" onclick="openCase('${caseItem.case_id}')">
-                    <div class="case-header">
-                        <h3>${caseItem.title}</h3>
-                        <span class="badge badge-${getStatusClass(caseItem.status)}">${caseItem.status}</span>
-                    </div>
-                    <div class="case-meta">
-                        <span>📅 ${new Date(caseItem.created_at).toLocaleDateString()}</span>
-                        <span>🏷️ ${caseItem.case_id}</span>
-                    </div>
-                    <div class="case-description">
-                        ${caseItem.description || 'No description provided'}
-                    </div>
-                    <div class="case-actions">
-                        <button class="btn btn-sm btn-outline" onclick="event.stopPropagation(); assignAnalyst('${caseItem.case_id}')">
-                            🔬 Assign Analyst
-                        </button>
-                        <button class="btn btn-sm btn-outline" onclick="event.stopPropagation(); updateStatus('${caseItem.case_id}')">
-                            📝 Update Status
-                        </button>
-                    </div>
-                </div>
-            `).join('');
-
-            container.innerHTML = casesHtml;
+        function createNewCase() {
+            alert('🚀 Create New Case functionality coming soon!\n\nThis will open a form to create a new investigation case with:\n• Case details and description\n• Evidence upload capability\n• Blockchain verification\n• Secure case management');
         }
 
-        async function loadActionItems() {
-            // Check for cases needing attention
-            const needsAttention = userCases.filter(c =>
-                c.status === 'ANALYZING' || c.status === 'LEGAL_REVIEW'
-            );
-
-            if (needsAttention.length > 0) {
-                const actionHtml = needsAttention.map(c => `
-                    <div class="action-item">
-                        <div class="action-icon">⚠️</div>
-                        <div class="action-content">
-                            <strong>${c.title}</strong>
-                            <p>Status: ${c.status} - Action required</p>
-                        </div>
-                        <button class="btn btn-sm btn-primary" onclick="openCase('${c.case_id}')">View</button>
-                    </div>
-                `).join('');
-
-                document.getElementById('actionItems').innerHTML = actionHtml;
-                document.getElementById('actionRequired').style.display = 'block';
-            }
+        function uploadEvidence() {
+            alert('📤 Upload Evidence functionality coming soon!\n\nThis will allow you to:\n• Upload digital evidence files\n• Generate blockchain hashes\n• Maintain chain of custody\n• Verify evidence integrity');
         }
 
-        function showCreateCaseForm() {
-            document.getElementById('createCaseModal').classList.add('active');
+        function searchCases() {
+            alert('🔍 Search Cases functionality coming soon!\n\nThis will provide:\n• Advanced case search filters\n• Evidence cross-referencing\n• Timeline analysis\n• Case relationship mapping');
         }
 
-        async function showMyCases() {
-            await loadCases();
-            document.getElementById('myCasesSection').scrollIntoView({ behavior: 'smooth' });
-        }
-
-        function showUploadEvidence() {
-            window.location.href = 'evidence-manager.html';
-        }
-
-        function showAuditTrail() {
-            window.location.href = 'audit-trail.html';
-        }
-
-        function getStatusClass(status) {
-            const classes = {
-                'CREATED': 'secondary',
-                'OPEN': 'primary',
-                'ANALYZING': 'warning',
-                'LEGAL_REVIEW': 'info',
-                'APPROVED': 'success',
-                'IN_CUSTODY': 'secondary',
-                'READY_TRIAL': 'warning',
-                'IN_TRIAL': 'danger',
-                'CLOSED': 'dark'
-            };
-            return classes[status] || 'secondary';
-        }
-
-        function openCase(caseId) {
-            window.location.href = `case-detail.html?caseId=${caseId}`;
-        }
-
-        function assignAnalyst(caseId) {
-            alert(`Assign analyst for case ${caseId} - functionality coming soon!`);
-        }
-
-        function updateStatus(caseId) {
-            alert(`Update status for case ${caseId} - functionality coming soon!`);
+        function generateReport() {
+            alert('📊 Generate Report functionality coming soon!\n\nThis will create:\n• Comprehensive investigation reports\n• Evidence summaries\n• Timeline reconstructions\n• Court-ready documentation');
         }
 
         function refreshCases() {
-            loadCases();
-        }
-
-        function closeModal() {
-            document.querySelectorAll('.modal').forEach(modal => modal.classList.remove('active'));
+            alert('🔄 Refreshing cases...\n\nIn the full system, this would:\n• Sync with blockchain\n• Update case statuses\n• Load new evidence\n• Refresh all data');
         }
 
         function logout() {
-            localStorage.clear();
-            window.location.href = 'index.html';
-        }
-
-        // Form submission
-        document.getElementById('createCaseForm').addEventListener('submit', async function(e) {
-            e.preventDefault();
-
-            const formData = {
-                title: document.getElementById('caseTitle').value,
-                description: document.getElementById('caseDescription').value,
-                crimeType: document.getElementById('crimeType').value,
-                location: document.getElementById('location').value,
-                suspects: document.getElementById('suspects').value
-            };
-
-            try {
-                const response = await fetch('/api/cases', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'x-user-wallet': currentUser.wallet_address
-                    },
-                    body: JSON.stringify(formData)
-                });
-
-                const result = await response.json();
-
-                if (result.success) {
-                    alert('Case created successfully!');
-                    closeModal();
-                    loadCases();
-                    loadDashboardStats();
-                } else {
-                    alert('Failed to create case: ' + result.error);
-                }
-            } catch (error) {
-                console.error('Case creation error:', error);
-                alert('Failed to create case. Please try again.');
+            if (confirm('Are you sure you want to logout?')) {
+                localStorage.clear();
+                window.location.href = 'index.html';
             }
-        });
+        }
     </script>
 </body>
-<nav class="navbar">
-  <div class="navbar-left">
-    <h2 class="navbar-logo" onclick="window.location.href='dashboard.html'">
-      🔐 EVID-DGC
-    </h2>
-  </div>
-
-  <div class="navbar-right">
-    <span class="user-role" id="userRole">Role</span>
-    <span class="user-wallet" id="userWallet">0x****...abc</span>
-    <button class="logout-btn" id="logoutBtn">Logout</button>
-  </div>
-</nav>
-
 </html>

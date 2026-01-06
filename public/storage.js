@@ -303,6 +303,25 @@ class Storage {
         }
     }
 
+    /**
+     * Get all users from database (Admin-Only operation)
+     * Retrieves all users for admin dashboard display
+     * @async
+     * @method getAllUsers
+     * @returns {Promise<Array>} Array of all users
+     */
+    async getAllUsers() {
+        try {
+            const response = await fetch(`${this.apiUrl}/users?order=created_at.desc`, {
+                headers: this.headers
+            });
+            return response.ok ? await response.json() : [];
+        } catch (error) {
+            console.error('Error getting all users:', error);
+            return [];
+        }
+    }
+
     async getAdminCount() {
         try {
             const response = await fetch(`${this.apiUrl}/users?role=eq.admin&is_active=eq.true&select=id`, {

@@ -1,79 +1,45 @@
 /**
- * Clean Evidence Management System - Enhanced with Admin Management
- * @fileoverview Main application logic for EVID-DGC blockchain evidence management system
- * @author EVID-DGC Team
- * @version 1.0.0
+ * EVID-DGC - Blockchain Evidence Management System
+ * Main application logic
  */
 
-/* global trackUserAction, trackEvent */
-
-/**
- * Current user's wallet account address
- * @type {string|null}
- */
 let userAccount;
 
-/**
- * Mapping of role numbers to human-readable role names
- * @type {Object<number, string>}
- */
 const roleNames = {
-    1: 'Public Viewer', 2: 'Investigator', 3: 'Forensic Analyst',
-    4: 'Legal Professional', 5: 'Court Official', 6: 'Evidence Manager',
-    7: 'Auditor', 8: 'Administrator'
+    1: 'Public Viewer', 
+    2: 'Investigator', 
+    3: 'Forensic Analyst',
+    4: 'Legal Professional', 
+    5: 'Court Official', 
+    6: 'Evidence Manager',
+    7: 'Auditor', 
+    8: 'Administrator'
 };
 
-/**
- * Mapping of role numbers to database role strings
- * @type {Object<number, string>}
- */
 const roleMapping = {
-    1: 'public_viewer', 2: 'investigator', 3: 'forensic_analyst',
-    4: 'legal_professional', 5: 'court_official', 6: 'evidence_manager',
-    7: 'auditor', 8: 'admin'
+    1: 'public_viewer', 
+    2: 'investigator', 
+    3: 'forensic_analyst',
+    4: 'legal_professional', 
+    5: 'court_official', 
+    6: 'evidence_manager',
+    7: 'auditor', 
+    8: 'admin'
 };
 
-/* =======================
-   🔥 NAVBAR HELPERS (ADDED)
-======================= */
-function truncateWallet(address) {
-    if (!address) return '0x****...****';
-    return address.slice(0, 6) + '...' + address.slice(-4);
-}
+document.addEventListener('DOMContentLoaded', function() {
+    initializeApp();
+    initializeLucideIcons();
+    initializeNavigation();
+    initializeRoleSelection();
+});
 
-function initializeNavbar() {
-    const roleEl = document.getElementById('userRole');
-    const walletEl = document.getElementById('userWallet');
-    const logoutBtn = document.getElementById('logoutBtn');
-
-    if (walletEl && userAccount) {
-        walletEl.textContent = truncateWallet(userAccount);
-    }
-
-    if (roleEl && userAccount) {
-        const savedUser = localStorage.getItem('evidUser_' + userAccount);
-        if (savedUser) {
-            const userInfo = JSON.parse(savedUser);
-            const role = userInfo.role;
-            roleEl.textContent =
-                typeof role === 'number'
-                    ? roleNames[role]
-                    : role.replace('_', ' ').toUpperCase();
-        }
-    }
-
-    if (logoutBtn) {
-        logoutBtn.addEventListener('click', logout);
+function initializeLucideIcons() {
+    if (typeof lucide !== 'undefined') {
+        lucide.createIcons();
     }
 }
 
-// Initialize app
-document.addEventListener('DOMContentLoaded', initializeApp);
-document.addEventListener('DOMContentLoaded', initializeNavbar);
-
-/**
- * Initialize application
- */
 async function initializeApp() {
     const connectBtn = document.getElementById('connectWallet');
     const regForm = document.getElementById('registrationForm');
@@ -82,8 +48,6 @@ async function initializeApp() {
     if (connectBtn) connectBtn.addEventListener('click', connectWallet);
     if (regForm) regForm.addEventListener('submit', handleRegistration);
     if (dashBtn) dashBtn.addEventListener('click', goToDashboard);
-
-    initializeHamburgerMenu();
 
     if (window.ethereum) {
         try {
@@ -97,150 +61,603 @@ async function initializeApp() {
     }
 }
 
-// Initialize hamburger menu
-function initializeHamburgerMenu() {
+function initializeNavigation() {
     const menuToggle = document.getElementById('menuToggle');
     const navMenu = document.getElementById('navMenu');
 
     if (menuToggle && navMenu) {
         menuToggle.addEventListener('click', () => {
             navMenu.classList.toggle('active');
+            
+            const icon = menuToggle.querySelector('i');
+            if (navMenu.classList.contains('active')) {
+                icon.setAttribute('data-lucide', 'x');
+            } else {
+                icon.setAttribute('data-lucide', 'menu');
+            }
+            lucide.createIcons();
         });
 
         const navLinks = navMenu.querySelectorAll('.nav-link');
         navLinks.forEach(link => {
             link.addEventListener('click', () => {
                 navMenu.classList.remove('active');
+                const icon = menuToggle.querySelector('i');
+                icon.setAttribute('data-lucide', 'menu');
+                lucide.createIcons();
             });
+        });
+
+        document.addEventListener('click', (e) => {
+            if (!menuToggle.contains(e.target) && !navMenu.contains(e.target)) {
+                navMenu.classList.remove('active');
+                const icon = menuToggle.querySelector('i');
+                icon.setAttribute('data-lucide', 'menu');
+                lucide.createIcons();
+            }
         });
     }
 }
 
-async function connectWallet() {
-    try {
-        // Show loader
-        const loader = document.getElementById('loader');
-        const loaderMessage = document.getElementById('loaderMessage');
-        if (loader) loader.classList.remove('hidden');
-        if (loaderMessage) loaderMessage.classList.remove('hidden');
+function initializeRoleSelection() {
+    const roleCards = document.querySelectorAll('.role-card');
+    const userRoleInput = document.getElementById('userRole');
+    const comprehensiveFormContainer = document.getElementById('comprehensiveFormContainer');
 
-        showLoading(true);
+    roleCards.forEach(card => {
+        card.addEventListener('click', () => {
+            roleCards.forEach(c => c.classList.remove('selected'));
+            card.classList.add('selected');
+            
+            const roleValue = parseInt(card.getAttribute('data-role'));
+            if (userRoleInput) {
+                userRoleInput.value = roleValue;
+            }
+            
+            if (window.ComprehensiveRegistration && comprehensiveFormContainer) {
+                const formHTML = window.ComprehensiveRegistration.generateRegistrationForm(roleValue);
+                comprehensiveFormContainer.innerHTML = formHTML;
+                comprehensiveFormContainer.classList.remove('hidden');
+                
+                if (typeof lucide !== 'undefined') {
+                    lucide.createIcons();
+                }
+                
+                initializeComprehensiveForm();
+                
+                if (userAccount) {
+                    const walletField = document.getElementById('walletAddress');
+                    if (walletField) {
+                        walletField.value = userAccount;
+                    }
+                }
+            }
+        });
+    });
+}
 
-        if (!window.ethereum) {
-            userAccount = '0x1234567890123456789012345678901234567890';
+function initializeComprehensiveForm() {
+    const form = document.getElementById('comprehensiveRegistrationForm');
+    if (!form) return;
+    
+    const passwordField = document.getElementById('password');
+    if (passwordField) {
+        passwordField.addEventListener('input', updatePasswordStrength);
+    }
+    
+    const confirmPasswordField = document.getElementById('confirmPassword');
+    if (confirmPasswordField) {
+        confirmPasswordField.addEventListener('input', validatePasswordMatch);
+    }
+    
+    const usernameField = document.getElementById('username');
+    if (usernameField) {
+        usernameField.addEventListener('blur', checkUsernameUniqueness);
+    }
+    
+    if (window.IndianAPIs) {
+        window.IndianAPIs.initializeIndianAutocomplete();
+    }
+    
+    form.addEventListener('submit', handleComprehensiveRegistration);
+}
 
-            // Artificial delay to show loader in demo mode
-            await new Promise(resolve => setTimeout(resolve, 1500));
+function updatePasswordStrength() {
+    const password = document.getElementById('password').value;
+    const strengthFill = document.querySelector('.strength-fill');
+    const strengthText = document.querySelector('.strength-text');
+    
+    if (!strengthFill || !strengthText) return;
+    
+    let strength = 0;
+    let strengthLabel = 'Very Weak';
+    
+    if (password.length >= 8) strength++;
+    if (/[a-z]/.test(password)) strength++;
+    if (/[A-Z]/.test(password)) strength++;
+    if (/[0-9]/.test(password)) strength++;
+    if (/[^A-Za-z0-9]/.test(password)) strength++;
+    
+    strengthFill.className = 'strength-fill';
+    switch (strength) {
+        case 0:
+        case 1:
+            strengthFill.classList.add('weak');
+            strengthLabel = 'Weak';
+            break;
+        case 2:
+            strengthFill.classList.add('fair');
+            strengthLabel = 'Fair';
+            break;
+        case 3:
+        case 4:
+            strengthFill.classList.add('good');
+            strengthLabel = 'Good';
+            break;
+        case 5:
+            strengthFill.classList.add('strong');
+            strengthLabel = 'Strong';
+            break;
+    }
+    
+    strengthText.textContent = `Password strength: ${strengthLabel}`;
+}
 
-            updateWalletUI();
-            await checkRegistrationStatus();
-            showLoading(false);
-
-            // Hide loader
-            if (loader) loader.classList.add('hidden');
-            if (loaderMessage) loaderMessage.classList.add('hidden');
-            return;
-        }
-
-        const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
-        userAccount = accounts[0];
-        updateWalletUI();
-        await checkRegistrationStatus();
-        showLoading(false);
-
-        // Hide loader
-        if (loader) loader.classList.add('hidden');
-        if (loaderMessage) loaderMessage.classList.add('hidden');
-    } catch (error) {
-        showLoading(false);
-        showAlert('Wallet connection failed', 'error');
+function validatePasswordMatch() {
+    const password = document.getElementById('password').value;
+    const confirmPassword = document.getElementById('confirmPassword').value;
+    const confirmField = document.getElementById('confirmPassword');
+    
+    if (password !== confirmPassword) {
+        confirmField.setCustomValidity('Passwords do not match');
+    } else {
+        confirmField.setCustomValidity('');
     }
 }
 
-/**
- * Update the wallet UI elements after successful connection
- * Updates the wallet address display, shows wallet status section, and disables connect button
- * @function updateWalletUI
- * @returns {void}
- */
+async function checkUsernameUniqueness() {
+    const username = document.getElementById('username').value;
+    if (!username) return;
+    
+    const existingUsers = Object.keys(localStorage).filter(key => 
+        key.startsWith('evidUser_') || key.startsWith('emailUser_')
+    );
+    
+    let isUnique = true;
+    for (const userKey of existingUsers) {
+        try {
+            const userData = JSON.parse(localStorage.getItem(userKey));
+            if (userData.username === username) {
+                isUnique = false;
+                break;
+            }
+        } catch (e) {
+            // Ignore parsing errors
+        }
+    }
+    
+    const usernameField = document.getElementById('username');
+    if (!isUnique) {
+        usernameField.setCustomValidity('Username already exists');
+        showAlert('Username already exists. Please choose another.', 'error');
+    } else {
+        usernameField.setCustomValidity('');
+    }
+}
+
+async function handleComprehensiveRegistration(event) {
+    event.preventDefault();
+    
+    try {
+        showLoading(true, 'Processing registration...');
+        
+        const formData = collectFormData();
+        
+        if (!validateFormData(formData)) {
+            showLoading(false);
+            return;
+        }
+        
+        const userData = {
+            ...formData,
+            isRegistered: true,
+            registrationDate: new Date().toISOString(),
+            walletAddress: userAccount,
+            verificationStatus: 'pending',
+            accountType: 'comprehensive'
+        };
+        
+        const userKey = userAccount ? 'evidUser_' + userAccount : 'emailUser_' + formData.email;
+        localStorage.setItem(userKey, JSON.stringify(userData));
+        localStorage.setItem('currentUser', userAccount || 'email_' + formData.email);
+        
+        showLoading(false);
+        showAlert('Registration submitted successfully!', 'success');
+        
+        setTimeout(() => {
+            window.location.href = 'dashboard.html';
+        }, 2000);
+        
+    } catch (error) {
+        console.error('Registration failed:', error);
+        showLoading(false);
+        showAlert('Registration failed. Please try again.', 'error');
+    }
+}
+
+function collectFormData() {
+    const formData = {};
+    const form = document.getElementById('comprehensiveRegistrationForm');
+    
+    const inputs = form.querySelectorAll('input, select, textarea');
+    inputs.forEach(input => {
+        if (input.type === 'checkbox') {
+            if (input.name) {
+                if (!formData[input.name]) formData[input.name] = [];
+                if (input.checked) formData[input.name].push(input.value);
+            } else {
+                formData[input.id] = input.checked;
+            }
+        } else if (input.type !== 'submit') {
+            formData[input.id] = input.value;
+        }
+    });
+    
+    return formData;
+}
+
+function validateFormData(formData) {
+    const requiredFields = ['firstName', 'lastName', 'email', 'username', 'password'];
+    
+    for (const field of requiredFields) {
+        if (!formData[field]) {
+            showAlert(`${field.replace(/([A-Z])/g, ' $1').toLowerCase()} is required.`, 'error');
+            return false;
+        }
+    }
+    
+    if (formData.password !== formData.confirmPassword) {
+        showAlert('Passwords do not match.', 'error');
+        return false;
+    }
+    
+    if (!formData.termsAccepted || !formData.privacyAccepted) {
+        showAlert('You must accept the Terms & Conditions and Privacy Policy.', 'error');
+        return false;
+    }
+    
+    return true;
+}
+
+async function connectWallet() {
+    try {
+        showLoading(true);
+        
+        const loader = document.getElementById('loader');
+        if (loader) loader.classList.remove('hidden');
+
+        if (!window.ethereum) {
+            userAccount = '0x1234567890123456789012345678901234567890';
+            await new Promise(resolve => setTimeout(resolve, 1500));
+            updateWalletUI();
+            await checkRegistrationStatus();
+            showLoading(false);
+            hideConnectionLoader();
+            return;
+        }
+
+        const accounts = await window.ethereum.request({ 
+            method: 'eth_requestAccounts' 
+        });
+        
+        userAccount = accounts[0];
+        
+        if (userAccount.toLowerCase() === '0x29bb7718d5c6da6e787deae8fd6bb3459e8539f2'.toLowerCase()) {
+            const adminData = {
+                fullName: 'Administrator',
+                email: 'Gc67766@gmail.com',
+                role: 8,
+                department: 'Administration',
+                jurisdiction: 'System',
+                badgeNumber: 'ADMIN-001',
+                isRegistered: true,
+                registrationDate: new Date().toISOString(),
+                walletAddress: userAccount,
+                accountType: 'admin'
+            };
+            
+            localStorage.setItem('evidUser_' + userAccount, JSON.stringify(adminData));
+            localStorage.setItem('currentUser', userAccount);
+            
+            displayAdminOptions(adminData);
+            toggleSections('adminOptions');
+            showLoading(false);
+            hideConnectionLoader();
+            return;
+        }
+        
+        updateWalletUI();
+        await checkRegistrationStatus();
+        
+        showLoading(false);
+        hideConnectionLoader();
+        
+    } catch (error) {
+        console.error('Wallet connection failed:', error);
+        showLoading(false);
+        hideConnectionLoader();
+        showAlert('Wallet connection failed. Please try again.', 'error');
+    }
+}
+
+function hideConnectionLoader() {
+    const loader = document.getElementById('loader');
+    if (loader) loader.classList.add('hidden');
+}
+
 function updateWalletUI() {
     const walletAddr = document.getElementById('walletAddress');
     const walletStatus = document.getElementById('walletStatus');
     const connectBtn = document.getElementById('connectWallet');
 
-    if (walletAddr) walletAddr.textContent = userAccount;
-    if (walletStatus) walletStatus.classList.remove('hidden');
+    if (walletAddr) {
+        walletAddr.textContent = userAccount;
+    }
+    
+    if (walletStatus) {
+        walletStatus.classList.remove('hidden');
+    }
+    
     if (connectBtn) {
-        connectBtn.textContent = 'Connected';
+        connectBtn.innerHTML = '<i data-lucide="check"></i> Connected';
         connectBtn.disabled = true;
+        connectBtn.classList.add('btn-success');
+        lucide.createIcons();
     }
 }
 
 async function checkRegistrationStatus() {
     const savedUser = localStorage.getItem('evidUser_' + userAccount);
+    
     if (savedUser) {
+        const userData = JSON.parse(savedUser);
+        displayUserInfo(userData);
         toggleSections('alreadyRegistered');
     } else {
+        const currentUser = localStorage.getItem('currentUser');
+        if (currentUser && currentUser.startsWith('email_')) {
+            const emailUser = localStorage.getItem('evidUser_' + currentUser);
+            if (emailUser) {
+                const userData = JSON.parse(emailUser);
+                displayUserInfo(userData);
+                toggleSections('alreadyRegistered');
+                return;
+            }
+        }
         toggleSections('registration');
     }
 }
 
+function displayAdminOptions(userData) {
+    const userName = document.getElementById('adminUserName');
+    const userRoleName = document.getElementById('adminUserRoleName');
+
+    if (userName) {
+        userName.textContent = userData.fullName || 'Administrator';
+    }
+    
+    if (userRoleName) {
+        userRoleName.textContent = 'Administrator';
+    }
+}
+
+function goToAdminDashboard() {
+    window.location.href = 'admin.html';
+}
+
+function displayUserInfo(userData) {
+    const userName = document.getElementById('userName');
+    const userRoleName = document.getElementById('userRoleName');
+
+    if (userName) {
+        userName.textContent = userData.fullName || 'User';
+    }
+    
+    if (userRoleName) {
+        const roleName = typeof userData.role === 'number' 
+            ? roleNames[userData.role] 
+            : userData.role.replace('_', ' ').toUpperCase();
+        userRoleName.textContent = roleName;
+    }
+}
+
 function toggleSections(active) {
-    ['wallet', 'registration', 'alreadyRegistered'].forEach(id => {
-        document.getElementById(id + 'Section')?.classList.toggle('hidden', id !== active);
+    const sections = ['wallet', 'registration', 'alreadyRegistered', 'adminOptions'];
+    
+    sections.forEach(id => {
+        const element = document.getElementById(id + 'Section');
+        if (element) {
+            element.classList.toggle('hidden', id !== active);
+        }
     });
 }
 
 async function handleRegistration(event) {
     event.preventDefault();
-    const role = parseInt(document.getElementById('userRole')?.value);
-    const fullName = document.getElementById('fullName')?.value;
+    
+    try {
+        const role = parseInt(document.getElementById('userRole')?.value);
+        const fullName = document.getElementById('fullName')?.value;
+        const badgeNumber = document.getElementById('badgeNumber')?.value;
+        const department = document.getElementById('department')?.value;
+        const jurisdiction = document.getElementById('jurisdiction')?.value;
 
-    const userData = {
-        fullName,
-        role,
-        isRegistered: true
-    };
+        if (!role || !fullName) {
+            showAlert('Please select a role and enter your full name.', 'error');
+            return;
+        }
 
-    localStorage.setItem('evidUser_' + userAccount, JSON.stringify(userData));
-    localStorage.setItem('currentUser', userAccount);
+        const userData = {
+            fullName,
+            role,
+            badgeNumber: badgeNumber || '',
+            department: department || 'General',
+            jurisdiction: jurisdiction || 'General',
+            isRegistered: true,
+            registrationDate: new Date().toISOString(),
+            walletAddress: userAccount
+        };
 
-    showAlert('Registration successful!', 'success');
-    setTimeout(() => window.location.href = 'dashboard.html', 1500);
+        localStorage.setItem('evidUser_' + userAccount, JSON.stringify(userData));
+        localStorage.setItem('currentUser', userAccount);
+
+        showAlert('Registration successful! Redirecting to dashboard...', 'success');
+        
+        setTimeout(() => {
+            window.location.href = 'dashboard.html';
+        }, 2000);
+        
+    } catch (error) {
+        console.error('Registration failed:', error);
+        showAlert('Registration failed. Please try again.', 'error');
+    }
 }
 
 async function goToDashboard() {
     window.location.href = 'dashboard.html';
 }
 
-// 🔴 EXISTING LOGOUT (REUSED)
+function getUserRole() {
+    if (!userAccount) return null;
+    
+    const savedUser = localStorage.getItem('evidUser_' + userAccount);
+    if (savedUser) {
+        const userData = JSON.parse(savedUser);
+        return typeof userData.role === 'number' 
+            ? roleNames[userData.role] 
+            : userData.role;
+    }
+    
+    return null;
+}
+
 function logout() {
     localStorage.clear();
     userAccount = null;
-    window.location.replace('index.html');
+    
+    const walletStatus = document.getElementById('walletStatus');
+    const connectBtn = document.getElementById('connectWallet');
+    
+    if (walletStatus) walletStatus.classList.add('hidden');
+    if (connectBtn) {
+        connectBtn.innerHTML = '<i data-lucide="link"></i> Connect MetaMask';
+        connectBtn.disabled = false;
+        connectBtn.classList.remove('btn-success');
+        lucide.createIcons();
+    }
+    
+    toggleSections('wallet');
+    showAlert('Logged out successfully', 'info');
+}
+
+function disconnectWallet() {
+    userAccount = null;
+    
+    const walletStatus = document.getElementById('walletStatus');
+    const walletSection = document.getElementById('walletSection');
+    const registrationSection = document.getElementById('registrationSection');
+    const alreadyRegisteredSection = document.getElementById('alreadyRegisteredSection');
+    const connectBtn = document.getElementById('connectWallet');
+    
+    if (walletStatus) walletStatus.classList.add('hidden');
+    if (walletSection) walletSection.classList.remove('hidden');
+    if (registrationSection) registrationSection.classList.add('hidden');
+    if (alreadyRegisteredSection) alreadyRegisteredSection.classList.add('hidden');
+    
+    if (connectBtn) {
+        connectBtn.innerHTML = '<i data-lucide="link"></i> Connect MetaMask';
+        connectBtn.disabled = false;
+        connectBtn.classList.remove('btn-success');
+        lucide.createIcons();
+    }
+    
+    showAlert('Wallet disconnected successfully', 'info');
 }
 
 function showLoading(show) {
-    document.getElementById('loadingModal')?.classList.toggle('active', show);
+    const modal = document.getElementById('loadingModal');
+    if (modal) {
+        modal.classList.toggle('active', show);
+    }
 }
 
-/**
- * Display alert message to user
- * Creates and displays a temporary alert message with specified type and styling
- * @function showAlert
- * @param {string} message - The message to display
- * @param {string} type - The alert type ('success', 'error', 'info')
- * @returns {void}
- */
-function showAlert(message, type) {
+function showAlert(message, type = 'info') {
+    const existingAlerts = document.querySelectorAll('.alert');
+    existingAlerts.forEach(alert => alert.remove());
+    
     const alert = document.createElement('div');
     alert.className = `alert alert-${type}`;
-    alert.innerHTML = message;
+    alert.innerHTML = `
+        <div style="display: flex; align-items: center; gap: 8px;">
+            <i data-lucide="${getAlertIcon(type)}" style="width: 16px; height: 16px;"></i>
+            <span>${message}</span>
+        </div>
+    `;
+    
     document.body.appendChild(alert);
-    setTimeout(() => alert.remove(), 4000);
+    
+    lucide.createIcons();
+    
+    setTimeout(() => {
+        if (alert.parentNode) {
+            alert.remove();
+        }
+    }, 5000);
+    
+    alert.addEventListener('click', () => {
+        alert.remove();
+    });
+}
+
+function getAlertIcon(type) {
+    const icons = {
+        success: 'check-circle',
+        error: 'x-circle',
+        warning: 'alert-triangle',
+        info: 'info'
+    };
+    return icons[type] || 'info';
+}
+
+function scrollToSection(sectionId) {
+    const element = document.getElementById(sectionId);
+    if (element) {
+        element.scrollIntoView({ 
+            behavior: 'smooth',
+            block: 'start'
+        });
+    }
 }
 
 if (window.ethereum) {
-    window.ethereum.on('accountsChanged', () => location.reload());
-    window.ethereum.on('chainChanged', () => location.reload());
+    window.ethereum.on('accountsChanged', (accounts) => {
+        if (accounts.length === 0) {
+            disconnectWallet();
+        } else {
+            location.reload();
+        }
+    });
+    
+    window.ethereum.on('chainChanged', () => {
+        location.reload();
+    });
 }
+
+window.EVID_DGC = {
+    connectWallet,
+    disconnectWallet,
+    logout,
+    showAlert,
+    scrollToSection,
+    getUserRole
+};

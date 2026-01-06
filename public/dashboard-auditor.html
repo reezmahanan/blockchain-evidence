@@ -5,91 +5,123 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>🔍 Auditor Dashboard - EVID-DGC</title>
     <link rel="stylesheet" href="styles.css">
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+    <style>
+        .auditor-hero {
+            background: linear-gradient(135deg, #4338ca, #6366f1);
+            color: white;
+            padding: 40px 0;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+    </style>
 </head>
 <body>
-
-    <nav class="dashboard-nav">
-        <div class="container">
-            <div class="nav-content">
-                <a href="index.html" class="nav-brand">🔐 EVID-DGC</a>
-                <div class="nav-items">
-                    <span id="userRole" class="badge badge-auditor">🔍 Auditor</span>
-                    <span id="userWallet" class="wallet-display">Loading...</span>
-                    <button class="btn btn-outline btn-sm" onclick="logout()">🚪 Logout</button>
-                </div>
+    <nav class="navbar">
+        <div class="navbar-left">
+            <div class="navbar-brand">
+                <i data-lucide="shield-check"></i>
+                <span>EVID-DGC</span>
             </div>
+        </div>
+        <div class="navbar-right">
+            <div class="user-info-nav">
+                <span class="user-role" id="userRole">🔍 Auditor</span>
+                <span class="user-wallet" id="userWallet">Loading...</span>
+            </div>
+            <button class="logout-btn" onclick="logout()">
+                <i data-lucide="log-out"></i>
+                <span>Logout</span>
+            </button>
         </div>
     </nav>
 
-    <div class="container">
-        <div class="dashboard-hero">
+    <div class="auditor-hero">
+        <div class="container">
             <h1>🔍 Auditor Dashboard</h1>
-            <p>Monitor system activities and ensure compliance</p>
-            <div class="hero-stats">
-                <div class="hero-stat">
-                    <span class="stat-icon">📊</span>
-                    <span class="stat-text">0 Audit Reports</span>
+            <p>System auditing, compliance monitoring, and integrity verification</p>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; margin-top: 30px;">
+                <div style="background: rgba(255,255,255,0.1); padding: 20px; border-radius: 12px;">
+                    <span style="font-size: 2rem; font-weight: bold; display: block;">45</span>
+                    <span>Audit Reports</span>
                 </div>
-                <div class="hero-stat">
-                    <span class="stat-icon">⚠️</span>
-                    <span class="stat-text">0 Alerts</span>
+                <div style="background: rgba(255,255,255,0.1); padding: 20px; border-radius: 12px;">
+                    <span style="font-size: 2rem; font-weight: bold; display: block;">12</span>
+                    <span>Compliance Issues</span>
                 </div>
-            </div>
-        </div>
-
-        <div class="card">
-            <div class="card-header">
-                <h2>🚀 Quick Actions</h2>
-            </div>
-            <div class="card-body">
-                <div class="btn-group">
-                    <button class="btn btn-primary">📊 System Audit</button>
-                    <button class="btn btn-outline">🔍 Activity Monitor</button>
-                    <button class="btn btn-outline">📄 Generate Report</button>
-                </div>
-            </div>
-        </div>
-
-        <div class="card">
-            <div class="card-header">
-                <h2>📊 System Activity</h2>
-            </div>
-            <div class="card-body">
-                <div class="text-center p-4">
-                    <p class="text-muted">No recent system activity to audit</p>
+                <div style="background: rgba(255,255,255,0.1); padding: 20px; border-radius: 12px;">
+                    <span style="font-size: 2rem; font-weight: bold; display: block;">98.5%</span>
+                    <span>System Integrity</span>
                 </div>
             </div>
         </div>
     </div>
 
-    <script src="config.js"></script>
-    <script src="storage.js"></script>
-    <script src="analytics.js"></script>
-    <script>
-        document.addEventListener('DOMContentLoaded', async function() {
-            await initializeDashboard();
-        });
+    <div class="container">
+        <div class="card">
+            <div class="card-header">
+                <h2>🔍 Audit Tools</h2>
+            </div>
+            <div class="card-body">
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px;">
+                    <div style="background: white; border-radius: 12px; padding: 25px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); cursor: pointer;" onclick="alert('📊 System Audit - Comprehensive system integrity checks')">
+                        <span style="font-size: 2.5rem; color: #6366f1;">📊</span>
+                        <h3>System Audit</h3>
+                        <p>Comprehensive system integrity checks</p>
+                    </div>
+                    <div style="background: white; border-radius: 12px; padding: 25px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); cursor: pointer;" onclick="alert('✅ Compliance Check - Monitor regulatory compliance')">
+                        <span style="font-size: 2.5rem; color: #6366f1;">✅</span>
+                        <h3>Compliance Check</h3>
+                        <p>Monitor regulatory compliance</p>
+                    </div>
+                    <div style="background: white; border-radius: 12px; padding: 25px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); cursor: pointer;" onclick="alert('🔗 Blockchain Verification - Verify blockchain integrity')">
+                        <span style="font-size: 2.5rem; color: #6366f1;">🔗</span>
+                        <h3>Blockchain Verification</h3>
+                        <p>Verify blockchain integrity</p>
+                    </div>
+                    <div style="background: white; border-radius: 12px; padding: 25px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); cursor: pointer;" onclick="alert('📋 Audit Reports - Generate comprehensive audit reports')">
+                        <span style="font-size: 2.5rem; color: #6366f1;">📋</span>
+                        <h3>Audit Reports</h3>
+                        <p>Generate comprehensive audit reports</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 
-        async function initializeDashboard() {
-            const wallet = localStorage.getItem('currentUser');
-            if (!wallet) {
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            lucide.createIcons();
+            const userAccount = localStorage.getItem('currentUser');
+            if (!userAccount) {
                 window.location.href = 'index.html';
                 return;
             }
-
-            const isTestUser = localStorage.getItem('testUserMode') === 'true';
-            if (isTestUser) {
-                document.getElementById('userRole').textContent = '🔍 Auditor (Test)';
+            
+            let userData = JSON.parse(localStorage.getItem('evidUser_' + userAccount) || '{}');
+            if (userData.role !== 'auditor' && userData.role !== 7) {
+                alert('Access denied. Auditor role required.');
+                logout();
+                return;
             }
             
-            document.getElementById('userWallet').textContent = wallet.substring(0, 8) + '...';
-        }
+            const isTestUser = localStorage.getItem('testUserMode') === 'true';
+            const userName = userData.fullName || 'Auditor';
+            document.getElementById('userRole').textContent = isTestUser ? 
+                `🔍 ${userName} (Test)` : `🔍 Auditor`;
+            
+            if (userData.walletAddress) {
+                document.getElementById('userWallet').textContent = 
+                    userData.walletAddress.slice(0, 6) + '...' + userData.walletAddress.slice(-4);
+            }
+        });
 
         function logout() {
-            localStorage.clear();
-            window.location.replace('index.html');
+            if (confirm('Are you sure you want to logout?')) {
+                localStorage.clear();
+                window.location.href = 'index.html';
+            }
         }
     </script>
 </body>
-
 </html>

@@ -2,7 +2,7 @@
  * Application Configuration
  * @fileoverview Essential configuration settings for EVID-DGC application
  * @author EVID-DGC Team
- * @version 1.0.0
+ * @version 2.0.0
  */
 
 /**
@@ -10,23 +10,38 @@
  * Contains all essential configuration settings including database connections,
  * file upload limits, and network settings
  * @type {Object}
- * @property {string} SUPABASE_URL - Supabase database URL
- * @property {string} SUPABASE_KEY - Supabase anonymous key for API access
- * @property {number} MAX_FILE_SIZE - Maximum file upload size in bytes (50MB)
- * @property {string[]} ALLOWED_TYPES - Array of allowed MIME types for file uploads
- * @property {string} NETWORK_NAME - Name of the blockchain network
- * @property {boolean} DEMO_MODE - Whether the application is running in demo mode
  */
 const config = {
-    // Supabase Database (Use environment variables in production)
-    SUPABASE_URL: (typeof process !== 'undefined' && process.env && process.env.SUPABASE_URL) || 'your_supabase_url_here',
-    SUPABASE_KEY: (typeof process !== 'undefined' && process.env && process.env.SUPABASE_KEY) || 'your_supabase_anon_key_here',
+    // Supabase Database Configuration
+    SUPABASE_URL: 'https://sl5jvmoln26pu5dq0bqqdq.supabase.co',
+    SUPABASE_KEY: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNsNWp2bW9sbjI2cHU1ZHEwYnFxZHEiLCJyb2xlIjoiYW5vbiIsImlhdCI6MTczNTU2NzI5NCwiZXhwIjoyMDUxMTQzMjk0fQ.sb_publishable_Sl5jvMoln26PU5Dq0BqqdQ_JtetnbJA',
     
-    // File Upload Limits
+    // File Upload Configuration
     MAX_FILE_SIZE: 50 * 1024 * 1024, // 50MB
-    ALLOWED_TYPES: ['image/*', 'video/*', 'audio/*', 'application/pdf', 'text/*'],
+    ALLOWED_TYPES: [
+        'image/jpeg', 'image/png', 'image/gif', 'image/webp',
+        'video/mp4', 'video/webm', 'video/avi',
+        'audio/mp3', 'audio/wav', 'audio/ogg',
+        'application/pdf', 'application/msword',
+        'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+        'text/plain', 'text/csv'
+    ],
     
-    // Network
-    NETWORK_NAME: 'Sepolia Testnet',
-    DEMO_MODE: false
+    // Network Configuration
+    NETWORK_NAME: 'Ethereum Mainnet',
+    CHAIN_ID: 1,
+    
+    // Application Settings
+    DEMO_MODE: false,
+    VERSION: '2.0.0',
+    
+    // API Configuration
+    API_BASE_URL: window.location.origin + '/api',
+    
+    // Security Settings
+    SESSION_TIMEOUT: 24 * 60 * 60 * 1000, // 24 hours
+    
+    // UI Configuration
+    ITEMS_PER_PAGE: 20,
+    ANIMATION_DURATION: 300
 };

@@ -1,90 +1,140 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Evid-DGC | Secure Blockchain Evidence Management System</title>
-
-    <!-- SEO Meta Tags -->
-    <title>EVID-DGC | Secure Blockchain Evidence Management System</title>
-    <meta name="description"
-        content="EVID-DGC: Blockchain evidence management for law enforcement, forensic analysts, and legal professionals. Ensures evidence integrity with immutable records.">
-    <meta name="keywords"
-        content="blockchain, evidence management, law enforcement, forensic analysis, chain of custody, digital evidence, secure records">
-    <meta name="author" content="EVID-DGC Team">
-
-    <link rel="stylesheet" href="styles.css?v=7">
+    <title>EVID-DGC | Blockchain Evidence Management System</title>
+    <meta name="description" content="Professional blockchain evidence management for law enforcement, forensic analysts, and legal professionals.">
+    <link rel="stylesheet" href="styles.css">
     <link rel="icon" href="/favicon.ico" type="image/x-icon">
-
-    <!-- Google Analytics -->
-    <script async src="https://www.googletagmanager.com/gtag/js?id=G-KEYDE0ZH4Z"></script>
-    <script>
-        window.dataLayer = window.dataLayer || [];
-        function gtag() { dataLayer.push(arguments); }
-        gtag('js', new Date());
-        gtag('config', 'G-KEYDE0ZH4Z');
-    </script>
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/web3@1.8.0/dist/web3.min.js"></script>
-    <script src="config.js?v=7"></script>
-    <script src="storage.js?v=7"></script>
-    <script src="analytics.js"></script>
-    <script src="app.js?v=7"></script>
+    <script src="config.js"></script>
+    <script src="storage.js"></script>
+    <script src="comprehensive-registration.js"></script>
+    <script src="indian-apis.js"></script>
+    <script src="app.js"></script>
 </head>
 
 <body>
+    <!-- Navigation Header -->
     <header class="header-nav">
         <div class="navbar-container">
-            <h1 class="logo">🔐 EVID-DGC</h1>
-
-            <!-- Hamburger button (shows only on mobile) -->
+            <div class="nav-brand">
+                <i data-lucide="shield-check" class="brand-icon"></i>
+                <span>EVID-DGC</span>
+            </div>
             <button class="menu-toggle" id="menuToggle">
-                <span></span>
-                <span></span>
-                <span></span>
+                <i data-lucide="menu" class="hamburger-icon"></i>
             </button>
-
-            <!-- Navigation menu -->
             <nav class="nav-menu" id="navMenu">
-                <a href="#home" class="nav-link">🏠 Home</a>
-                <a href="https://github.com/Gooichand/blockchain-evidence" target="_blank" class="nav-link">🐧
-                    GitHub</a>
-                <a href="#docs" class="nav-link">📚 Documentation</a>
-                <a href="#faq" class="nav-link">❓ FAQ</a>
+                <a href="#home" class="nav-link" onclick="scrollToTop()">
+                    <i data-lucide="home"></i>
+                    <span>Home</span>
+                </a>
+                <a href="#documentation" class="nav-link" onclick="scrollToSection('documentation')">
+                    <i data-lucide="book-open"></i>
+                    <span>Documentation</span>
+                </a>
+                <a href="#faq" class="nav-link" onclick="scrollToSection('faq')">
+                    <i data-lucide="help-circle"></i>
+                    <span>Q&A</span>
+                </a>
+                <a href="#contact" class="nav-link" onclick="scrollToSection('contact')">
+                    <i data-lucide="phone"></i>
+                    <span>Contact</span>
+                </a>
+                <a href="https://github.com/Gooichand/blockchain-evidence" target="_blank" class="nav-link">
+                    <i data-lucide="github"></i>
+                    <span>GitHub</span>
+                </a>
+                <button class="nav-login-btn" onclick="scrollToSection('login-options')">
+                    <i data-lucide="log-in"></i>
+                    <span>Login</span>
+                </button>
             </nav>
         </div>
     </header>
 
+    <!-- Animated Background -->
     <div class="particles" id="particles"></div>
 
     <div class="container">
-        <div class="header">
-            <h1>🔐 EVID-DGC</h1>
-            <p>🌟 Next-Generation Blockchain Evidence Management System 🌟</p>
+        <!-- Hero Section -->
+        <div class="hero-section">
+            <div class="hero-content">
+                <div class="hero-icon">
+                    <i data-lucide="shield-check"></i>
+                </div>
+                <h1>EVID-DGC</h1>
+                <p class="hero-subtitle">Blockchain Evidence Management System</p>
+                <p class="hero-description">Secure, transparent, and immutable evidence management for law enforcement and legal professionals.</p>
+            </div>
+        </div>
+
+        <!-- Login Options -->
+        <div class="card" id="login-options">
+            <div class="card-header">
+                <div class="card-icon">
+                    <i data-lucide="log-in"></i>
+                </div>
+                <h2>Login Options</h2>
+                <p>Choose your authentication method</p>
+            </div>
+            <div class="card-body">
+                <div class="login-plan-grid">
+                    <div class="plan-option" onclick="scrollToSection('walletSection')">
+                        <div class="plan-icon">
+                            <i data-lucide="wallet"></i>
+                        </div>
+                        <h3>MetaMask Wallet</h3>
+                        <p>Blockchain authentication</p>
+                    </div>
+                    <div class="plan-option" onclick="showEmailLogin()">
+                        <div class="plan-icon">
+                            <i data-lucide="mail"></i>
+                        </div>
+                        <h3>Email & Password</h3>
+                        <p>Traditional login</p>
+                    </div>
+                </div>
+            </div>
         </div>
 
         <!-- Wallet Connection -->
         <div id="walletSection" class="card">
             <div class="card-header">
-                <h2>🦊 Connect Your Digital Wallet</h2>
+                <div class="card-icon">
+                    <i data-lucide="wallet"></i>
+                </div>
+                <h2>Connect Wallet</h2>
                 <p>Connect your MetaMask wallet to access the system</p>
             </div>
             <div class="card-body">
                 <button id="connectWallet" class="btn btn-primary pulse">
-                    🚀 Connect MetaMask Wallet
+                    <i data-lucide="link"></i>
+                    Connect MetaMask
                 </button>
                 <div id="loader" class="loader hidden"></div>
-                <div id="loaderMessage" class="loader-message hidden">Connecting to MetaMask...</div>
             </div>
         </div>
 
         <!-- Wallet Status -->
         <div id="walletStatus" class="wallet-status hidden">
-            <h3>✅ Wallet Connected!</h3>
-            <div id="walletAddress" class="wallet-address"></div>
+            <div class="status-header">
+                <i data-lucide="check-circle" class="status-icon success"></i>
+                <h3>Wallet Connected!</h3>
+            </div>
+            <div class="wallet-info">
+                <div class="wallet-address-container">
+                    <label>Wallet Address:</label>
+                    <div id="walletAddress" class="wallet-address"></div>
+                </div>
+            </div>
             <div class="wallet-actions">
                 <button onclick="disconnectWallet()" class="btn btn-outline btn-sm">
-                    🔌 Disconnect Wallet
+                    <i data-lucide="unlink"></i>
+                    Disconnect
                 </button>
             </div>
         </div>
@@ -92,58 +142,76 @@
         <!-- Registration Section -->
         <div id="registrationSection" class="card hidden">
             <div class="card-header">
-                <h2>👤 User Registration</h2>
-                <p>Select your role and register (Administrator accounts are created by existing admins only)</p>
+                <div class="card-icon">
+                    <i data-lucide="user-plus"></i>
+                </div>
+                <h2>User Registration</h2>
+                <p>Select your role and complete registration</p>
             </div>
 
+            <!-- Role Selection -->
             <div class="role-selection">
-                <h3>🎯 Select Your Role</h3>
+                <h3>Select Your Role</h3>
                 <div class="role-grid">
                     <div class="role-card" data-role="1">
                         <div class="role-card-content">
-                            <div class="role-icon">👁️</div>
+                            <div class="role-icon">
+                                <i data-lucide="eye"></i>
+                            </div>
                             <div class="role-title">Public Viewer</div>
-                            <div class="role-description">View public cases and evidence</div>
+                            <div class="role-description">View public cases</div>
                         </div>
                     </div>
                     <div class="role-card" data-role="2">
                         <div class="role-card-content">
-                            <div class="role-icon">🕵️</div>
+                            <div class="role-icon">
+                                <i data-lucide="search"></i>
+                            </div>
                             <div class="role-title">Investigator</div>
-                            <div class="role-description">Create and manage investigations</div>
+                            <div class="role-description">Manage investigations</div>
                         </div>
                     </div>
                     <div class="role-card" data-role="3">
                         <div class="role-card-content">
-                            <div class="role-icon">🔬</div>
+                            <div class="role-icon">
+                                <i data-lucide="microscope"></i>
+                            </div>
                             <div class="role-title">Forensic Analyst</div>
                             <div class="role-description">Analyze evidence</div>
                         </div>
                     </div>
                     <div class="role-card" data-role="4">
                         <div class="role-card-content">
-                            <div class="role-icon">⚖️</div>
+                            <div class="role-icon">
+                                <i data-lucide="scale"></i>
+                            </div>
                             <div class="role-title">Legal Professional</div>
                             <div class="role-description">Legal review</div>
                         </div>
                     </div>
                     <div class="role-card" data-role="5">
                         <div class="role-card-content">
-                            <div class="role-icon">🏛️</div>
+                            <div class="role-icon">
+                                <i data-lucide="building"></i>
+                            </div>
                             <div class="role-title">Court Official</div>
                             <div class="role-description">Court proceedings</div>
                         </div>
                     </div>
                     <div class="role-card" data-role="6">
                         <div class="role-card-content">
-                            <div class="role-icon">📋</div>
+                            <div class="role-icon">
+                                <i data-lucide="clipboard-list"></i>
+                            </div>
                             <div class="role-title">Evidence Manager</div>
-                            <div class="role-description">Manage evidence lifecycle</div>
+                            <div class="role-description">Manage evidence</div>
                         </div>
                     </div>
                     <div class="role-card" data-role="7">
                         <div class="role-card-content">
-                            <div class="role-icon">🔍</div>
+                            <div class="role-icon">
+                                <i data-lucide="audit"></i>
+                            </div>
                             <div class="role-title">Auditor</div>
                             <div class="role-description">System auditing</div>
                         </div>
@@ -151,88 +219,357 @@
                 </div>
             </div>
 
-            <form id="registrationForm" class="registration-form">
-                <div class="form-group">
-                    <label for="fullName">👤 Full Name *</label>
-                    <input type="text" id="fullName" class="form-control" placeholder="Enter your full name" required>
-                </div>
+            <!-- Form Container -->
+            <div id="comprehensiveFormContainer" class="hidden">
+                <!-- Form will be generated here -->
+            </div>
+        </div>
 
-                <input type="hidden" id="userRole" value="">
-
-                <div id="professionalFields" class="professional-fields">
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label for="badgeNumber">🏷️ Badge/ID Number</label>
-                            <input type="text" id="badgeNumber" class="form-control" placeholder="Enter badge number">
-                        </div>
-                        <div class="form-group">
-                            <label for="department">🏢 Department</label>
-                            <input type="text" id="department" class="form-control" placeholder="Enter department">
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label for="jurisdiction">🌍 Jurisdiction</label>
-                        <input type="text" id="jurisdiction" class="form-control" placeholder="Enter jurisdiction">
-                    </div>
+        <!-- Admin Options -->
+        <div id="adminOptionsSection" class="card hidden">
+            <div class="card-header">
+                <div class="card-icon">
+                    <i data-lucide="shield-check"></i>
                 </div>
-
-                <div class="form-actions">
-                    <button type="submit" class="btn btn-success">
-                        ✨ Register & Enter System
-                    </button>
+                <h2>Administrator Access</h2>
+                <p>Welcome back, Administrator!</p>
+            </div>
+            <div class="user-info">
+                <div class="user-avatar">
+                    <i data-lucide="crown"></i>
                 </div>
-            </form>
+                <div class="user-details">
+                    <h3 id="adminUserName">Administrator</h3>
+                    <span id="adminUserRoleName" class="badge badge-admin">Administrator</span>
+                </div>
+            </div>
+            <div class="card-actions">
+                <button onclick="goToAdminDashboard()" class="btn btn-primary">
+                    <i data-lucide="settings"></i>
+                    Admin Dashboard
+                </button>
+                <button onclick="logout()" class="btn btn-outline">
+                    <i data-lucide="user-plus"></i>
+                    Create Account
+                </button>
+            </div>
         </div>
 
         <!-- Already Registered -->
         <div id="alreadyRegisteredSection" class="card hidden">
             <div class="card-header">
-                <h2>🎉 Welcome Back!</h2>
+                <div class="card-icon">
+                    <i data-lucide="user-check"></i>
+                </div>
+                <h2>Welcome Back!</h2>
+                <p>Access your dashboard</p>
             </div>
             <div class="user-info">
-                <div class="user-avatar">👤</div>
+                <div class="user-avatar">
+                    <i data-lucide="user"></i>
+                </div>
                 <div class="user-details">
                     <h3 id="userName">Loading...</h3>
                     <span id="userRoleName" class="badge">Loading...</span>
-                    <p><strong>Department:</strong> <span id="userDepartment">Loading...</span></p>
                 </div>
             </div>
             <div class="card-actions">
                 <button id="goToDashboard" class="btn btn-primary">
-                    🚀 Go to Dashboard
+                    <i data-lucide="arrow-right"></i>
+                    Dashboard
                 </button>
                 <button onclick="logout()" class="btn btn-outline">
-                    🚪 Switch Account
+                    <i data-lucide="log-out"></i>
+                    Switch Account
                 </button>
             </div>
         </div>
 
-        <!-- Login Options -->
-        <div class="card">
-            <div class="card-header">
-                <h2>🔑 Already Have an Account?</h2>
+        <!-- Documentation Section -->
+        <div class="documentation-section" id="documentation">
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-icon">
+                        <i data-lucide="book-open"></i>
+                    </div>
+                    <h2>Documentation</h2>
+                    <p>Complete guide to using the EVID-DGC system</p>
+                </div>
+                <div class="doc-grid">
+                    <div class="doc-item">
+                        <div class="doc-icon">
+                            <i data-lucide="play-circle"></i>
+                        </div>
+                        <h3>Quick Start Guide</h3>
+                        <p>Get started with wallet connection and user registration</p>
+                    </div>
+                    <div class="doc-item">
+                        <div class="doc-icon">
+                            <i data-lucide="users"></i>
+                        </div>
+                        <h3>User Roles</h3>
+                        <p>Understanding permissions and access levels for each role</p>
+                    </div>
+                    <div class="doc-item">
+                        <div class="doc-icon">
+                            <i data-lucide="upload"></i>
+                        </div>
+                        <h3>Evidence Upload</h3>
+                        <p>Step-by-step guide to uploading and managing evidence</p>
+                    </div>
+                    <div class="doc-item">
+                        <div class="doc-icon">
+                            <i data-lucide="settings"></i>
+                        </div>
+                        <h3>API Reference</h3>
+                        <p>Technical documentation for developers and integrations</p>
+                    </div>
+                </div>
             </div>
-            <div class="card-body text-center">
-                <button onclick="logout()" class="btn btn-outline">
-                    🔄 Clear Session & Login Again
-                </button>
+        </div>
+
+        <!-- FAQ Section -->
+        <div class="faq-section" id="faq">
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-icon">
+                        <i data-lucide="help-circle"></i>
+                    </div>
+                    <h2>Frequently Asked Questions</h2>
+                    <p>Common questions about the EVID-DGC system</p>
+                </div>
+                <div class="faq-list">
+                    <div class="faq-item">
+                        <div class="faq-question">
+                            <h3>What is EVID-DGC?</h3>
+                            <i data-lucide="chevron-down"></i>
+                        </div>
+                        <div class="faq-answer">
+                            <p>EVID-DGC is a blockchain-based evidence management system designed for law enforcement, forensic analysts, and legal professionals. It ensures evidence integrity through immutable records and provides role-based access control.</p>
+                        </div>
+                    </div>
+                    <div class="faq-item">
+                        <div class="faq-question">
+                            <h3>How secure is the system?</h3>
+                            <i data-lucide="chevron-down"></i>
+                        </div>
+                        <div class="faq-answer">
+                            <p>The system uses blockchain technology for immutable records, cryptographic hashing for evidence integrity, and enterprise-grade security measures including role-based access control and audit logging.</p>
+                        </div>
+                    </div>
+                    <div class="faq-item">
+                        <div class="faq-question">
+                            <h3>What user roles are available?</h3>
+                            <i data-lucide="chevron-down"></i>
+                        </div>
+                        <div class="faq-answer">
+                            <p>The system supports 8 user roles: Public Viewer, Investigator, Forensic Analyst, Legal Professional, Court Official, Evidence Manager, Auditor, and Administrator. Each role has specific permissions and access levels.</p>
+                        </div>
+                    </div>
+                    <div class="faq-item">
+                        <div class="faq-question">
+                            <h3>Do I need MetaMask to use the system?</h3>
+                            <i data-lucide="chevron-down"></i>
+                        </div>
+                        <div class="faq-answer">
+                            <p>MetaMask is required for wallet-based authentication. Alternatively, you can use email and password authentication for easier access.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Contact Section -->
+        <div class="contact-section" id="contact">
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-icon">
+                        <i data-lucide="phone"></i>
+                    </div>
+                    <h2>Contact Us</h2>
+                    <p>Get in touch with our team for support and inquiries</p>
+                </div>
+                <div class="contact-grid">
+                    <div class="contact-item">
+                        <div class="contact-icon">
+                            <i data-lucide="mail"></i>
+                        </div>
+                        <h3>Email Support</h3>
+                        <p>support@evid-dgc.com</p>
+                    </div>
+                    <div class="contact-item">
+                        <div class="contact-icon">
+                            <i data-lucide="phone"></i>
+                        </div>
+                        <h3>Phone Support</h3>
+                        <p>+1 (555) 123-4567</p>
+                    </div>
+                    <div class="contact-item">
+                        <div class="contact-icon">
+                            <i data-lucide="github"></i>
+                        </div>
+                        <h3>GitHub</h3>
+                        <p><a href="https://github.com/Gooichand/blockchain-evidence" target="_blank">View Repository</a></p>
+                    </div>
+                    <div class="contact-item">
+                        <div class="contact-icon">
+                            <i data-lucide="map-pin"></i>
+                        </div>
+                        <h3>Location</h3>
+                        <p>Global Operations</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div id="emailLoginModal" class="modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3>Email Login</h3>
+                    <button class="modal-close" onclick="closeEmailLogin()">
+                        <i data-lucide="x"></i>
+                    </button>
+                </div>
+                <form id="emailLoginForm">
+                    <div class="form-group">
+                        <label for="loginEmail">
+                            <i data-lucide="mail"></i>
+                            Email Address
+                        </label>
+                        <input type="email" id="loginEmail" class="form-control" placeholder="Enter your email" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="loginPassword">
+                            <i data-lucide="lock"></i>
+                            Password
+                        </label>
+                        <input type="password" id="loginPassword" class="form-control" placeholder="Enter your password" required>
+                    </div>
+                    <div class="form-actions">
+                        <button type="submit" class="btn btn-primary">
+                            <i data-lucide="log-in"></i>
+                            Login
+                        </button>
+                        <button type="button" class="btn btn-outline" onclick="showEmailRegistration()">
+                            <i data-lucide="user-plus"></i>
+                            Create Account
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+        <!-- Email Registration Modal -->
+        <div id="emailRegistrationModal" class="modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3>Create Account</h3>
+                    <button class="modal-close" onclick="closeEmailRegistration()">
+                        <i data-lucide="x"></i>
+                    </button>
+                </div>
+                <form id="emailRegistrationForm">
+                    <div class="form-group">
+                        <label for="regEmail">
+                            <i data-lucide="mail"></i>
+                            Email Address
+                        </label>
+                        <input type="email" id="regEmail" class="form-control" placeholder="Enter your email" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="regPassword">
+                            <i data-lucide="lock"></i>
+                            Password
+                        </label>
+                        <input type="password" id="regPassword" class="form-control" placeholder="Create a password" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="regConfirmPassword">
+                            <i data-lucide="lock"></i>
+                            Confirm Password
+                        </label>
+                        <input type="password" id="regConfirmPassword" class="form-control" placeholder="Confirm your password" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="regFullName">
+                            <i data-lucide="user"></i>
+                            Full Name
+                        </label>
+                        <input type="text" id="regFullName" class="form-control" placeholder="Enter your full name" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="regRole">
+                            <i data-lucide="users"></i>
+                            Role
+                        </label>
+                        <select id="regRole" class="form-control" required onchange="loadEmailRoleFields()">
+                            <option value="">Select your role</option>
+                            <option value="1">Public Viewer</option>
+                            <option value="2">Investigator</option>
+                            <option value="3">Forensic Analyst</option>
+                            <option value="4">Legal Professional</option>
+                            <option value="5">Court Official</option>
+                            <option value="6">Evidence Manager</option>
+                            <option value="7">Auditor</option>
+                        </select>
+                    </div>
+                    <div id="emailRoleFields" style="display: none;"></div>
+                    <div class="form-actions">
+                        <button type="submit" class="btn btn-success">
+                            <i data-lucide="user-plus"></i>
+                            Create Account
+                        </button>
+                        <button type="button" class="btn btn-outline" onclick="closeEmailRegistration()">
+                            Cancel
+                        </button>
+                    </div>
+                </form>
             </div>
         </div>
     </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-container">
+            <div class="footer-section">
+                <div class="footer-brand">
+                    <i data-lucide="shield-check"></i>
+                    <span>EVID-DGC</span>
+                </div>
+                <p>Secure blockchain evidence management system.</p>
+            </div>
+            <div class="footer-section">
+                <h3>Links</h3>
+                <ul>
+                    <li><a href="https://github.com/Gooichand/blockchain-evidence" target="_blank">GitHub</a></li>
+                    <li><a href="#" onclick="showAlert('Coming soon!', 'info')">Documentation</a></li>
+                    <li><a href="#" onclick="showAlert('Coming soon!', 'info')">Support</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2026 EVID-DGC. All rights reserved.</p>
+        </div>
+    </footer>
 
     <!-- Loading Modal -->
     <div id="loadingModal" class="modal">
         <div class="modal-content">
             <div class="spinner"></div>
-            <h3>⚡ Processing...</h3>
+            <h3>Processing...</h3>
+            <p>Please wait...</p>
         </div>
     </div>
 
     <script>
-        // Create particles
+        document.addEventListener('DOMContentLoaded', function() {
+            lucide.createIcons();
+            createParticles();
+            initializeEmailLogin();
+            initializeFAQ();
+        });
+
         function createParticles() {
             const particles = document.getElementById('particles');
-            for (let i = 0; i < 50; i++) {
+            for (let i = 0; i < 30; i++) {
                 const particle = document.createElement('div');
                 particle.className = 'particle';
                 particle.style.left = Math.random() * 100 + '%';
@@ -242,9 +579,180 @@
             }
         }
 
-        document.addEventListener('DOMContentLoaded', function () {
-            createParticles();
-        });
+        function initializeEmailLogin() {
+            const emailLoginForm = document.getElementById('emailLoginForm');
+            const emailRegForm = document.getElementById('emailRegistrationForm');
+            
+            if (emailLoginForm) {
+                emailLoginForm.addEventListener('submit', handleEmailLogin);
+            }
+            
+            if (emailRegForm) {
+                emailRegForm.addEventListener('submit', handleEmailRegistration);
+            }
+        }
+        
+        async function handleEmailLogin(event) {
+            event.preventDefault();
+            
+            const email = document.getElementById('loginEmail').value;
+            const password = document.getElementById('loginPassword').value;
+            
+            if (email.toLowerCase() === 'gc67766@gmail.com' && password === '@Gopichand1@') {
+                const adminData = {
+                    email: 'Gc67766@gmail.com',
+                    fullName: 'System Administrator',
+                    role: 8,
+                    department: 'Administration',
+                    isRegistered: true,
+                    walletAddress: '0x29bb7718d5c6da6e787deae8fd6bb3459e8539f2',
+                    loginType: 'email',
+                    accountType: 'admin'
+                };
+                
+                localStorage.setItem('emailUser_' + email, JSON.stringify(adminData));
+                localStorage.setItem('currentUser', 'email_' + email);
+                localStorage.setItem('evidUser_email_' + email, JSON.stringify(adminData));
+                
+                showAlert('Admin login successful!', 'success');
+                displayAdminEmailOptions();
+                return;
+            }
+            
+            const savedUser = localStorage.getItem('emailUser_' + email);
+            
+            if (!savedUser) {
+                showAlert('Account not found. Please register first.', 'error');
+                return;
+            }
+            
+            const userData = JSON.parse(savedUser);
+            
+            if (userData.password !== password) {
+                showAlert('Invalid password.', 'error');
+                return;
+            }
+            
+            localStorage.setItem('currentUser', 'email_' + email);
+            localStorage.setItem('evidUser_email_' + email, JSON.stringify(userData));
+            
+            showAlert('Login successful!', 'success');
+            
+            setTimeout(() => {
+                window.location.href = 'dashboard.html';
+            }, 1500);
+        }
+        
+        async function handleEmailRegistration(event) {
+            event.preventDefault();
+            
+            const email = document.getElementById('regEmail').value;
+            const password = document.getElementById('regPassword').value;
+            const confirmPassword = document.getElementById('regConfirmPassword').value;
+            const fullName = document.getElementById('regFullName').value;
+            const role = parseInt(document.getElementById('regRole').value);
+            
+            if (password !== confirmPassword) {
+                showAlert('Passwords do not match.', 'error');
+                return;
+            }
+            
+            if (password.length < 6) {
+                showAlert('Password must be at least 6 characters.', 'error');
+                return;
+            }
+            
+            const existingUser = localStorage.getItem('emailUser_' + email);
+            if (existingUser) {
+                showAlert('Account already exists.', 'error');
+                return;
+            }
+            
+            const userData = {
+                email,
+                password,
+                fullName,
+                role,
+                department: 'General',
+                jurisdiction: 'General',
+                isRegistered: true,
+                registrationDate: new Date().toISOString(),
+                loginType: 'email'
+            };
+            
+            localStorage.setItem('emailUser_' + email, JSON.stringify(userData));
+            localStorage.setItem('currentUser', 'email_' + email);
+            localStorage.setItem('evidUser_email_' + email, JSON.stringify(userData));
+            
+            showAlert('Registration successful!', 'success');
+            closeEmailRegistration();
+            
+            setTimeout(() => {
+                window.location.href = 'dashboard.html';
+            }, 1500);
+        }
+        
+        function showEmailRegistration() {
+            document.getElementById('emailRegistrationModal').classList.add('active');
+        }
+        
+        function closeEmailRegistration() {
+            document.getElementById('emailRegistrationModal').classList.remove('active');
+        }
+        
+        function showEmailLogin() {
+            document.getElementById('emailLoginModal').classList.add('active');
+        }
+        
+        function closeEmailLogin() {
+            document.getElementById('emailLoginModal').classList.remove('active');
+        }
+        
+        function displayAdminEmailOptions() {
+            closeEmailLogin();
+            toggleSections('adminOptions');
+        }
+
+        function scrollToSection(sectionId) {
+            const element = document.getElementById(sectionId);
+            if (element) {
+                element.scrollIntoView({ behavior: 'smooth' });
+            }
+        }
+
+        function scrollToTop() {
+            window.scrollTo({ 
+                top: 0, 
+                behavior: 'smooth' 
+            });
+        }
+
+        function initializeFAQ() {
+            const faqItems = document.querySelectorAll('.faq-item');
+            faqItems.forEach(item => {
+                const question = item.querySelector('.faq-question');
+                question.addEventListener('click', () => {
+                    item.classList.toggle('active');
+                });
+            });
+        }
+
+        function disconnectWallet() {
+            userAccount = null;
+            document.getElementById('walletStatus').classList.add('hidden');
+            document.getElementById('walletSection').classList.remove('hidden');
+            document.getElementById('registrationSection').classList.add('hidden');
+            document.getElementById('alreadyRegisteredSection').classList.add('hidden');
+            
+            const connectBtn = document.getElementById('connectWallet');
+            if (connectBtn) {
+                connectBtn.innerHTML = '<i data-lucide="link"></i> Connect MetaMask';
+                connectBtn.disabled = false;
+                lucide.createIcons();
+            }
+            
+            showAlert('Wallet disconnected', 'info');
+        }
     </script>
 </body>
 

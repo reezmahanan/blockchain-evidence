@@ -1,8 +1,7 @@
 -- First Admin Setup Script for EVID-DGC
 -- Run this ONCE in Supabase SQL Editor to create the first administrator
-
--- Replace 'YOUR_WALLET_ADDRESS_HERE' with the actual wallet address of the first admin
--- Replace 'First Admin Name' with the actual name of the first admin
+-- Admin Wallet: 0x29bb7718d5c6da6e787deae8fd6bb3459e8539f2
+-- Admin Email: Gc67766@gmail.com
 
 INSERT INTO users (
     wallet_address,
@@ -15,8 +14,8 @@ INSERT INTO users (
     created_by,
     is_active
 ) VALUES (
-    '0x1234567890123456789012345678901234567890', -- Replace with actual wallet address
-    'System Administrator',                        -- Replace with actual admin name
+    '0x29bb7718d5c6da6e787deae8fd6bb3459e8539f2', -- Admin wallet address
+    'System Administrator',                        -- Admin name
     'admin',
     'Administration',
     'System',
