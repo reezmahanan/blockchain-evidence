@@ -36,6 +36,25 @@
   <img src="https://user-images.githubusercontent.com/73097560/115834477-dbab4500-a447-11eb-908a-139a6edaec5c.gif" width="100%">
 </div>
 
+<div align="center">
+  <img src="https://readme-typing-svg.herokuapp.com?font=Fira+Code&weight=600&size=25&pause=1000&color=36BCF7&center=true&vCenter=true&width=600&lines=Welcome+to+EVID-DGC;Secure+Blockchain+Evidence+Management;Role-Based+Access+Control;Immutable+Audit+Logs" alt="Typing SVG" />
+</div>
+
+<p align="center">
+  <a href="https://evid-dgc.onrender.com"><strong>🌐 Live Website</strong></a>
+</p>
+
+---
+
+## ❓ Problem & Solution
+
+### Problem Statement
+Digital evidence management often faces challenges like data tampering, lack of a verifiable chain of custody, and inconsistent access control. Traditional systems can be opaque, making it difficult for judicial and investigative bodies to trust the integrity of digital artifacts.
+
+### Solution Overview
+**EVID-DGC** addresses these issues by leveraging blockchain-inspired principles and robust role-based access control. By utilizing a secure Supabase backend and providing immutable audit logs, the system ensures that every action—from evidence upload to court review—is tracked and verifiable, maintaining the highest standards of digital forensic integrity.
+
+---
 
 ## ✨ Features
 
@@ -50,15 +69,74 @@
 - 🔍 **Audit Logging** - Complete activity tracking and compliance
 - 🌐 **Multi-Platform** - Deploy on Render, Vercel, or Netlify
 
+## 👥 Team Information
+
+### Project Admin
+**Gooichand**  
+[![GitHub](https://img.shields.io/badge/GitHub-181717?style=for-the-badge&logo=github&logoColor=white)](https://github.com/Gooichand)
+
+### Mentors
+| Name | Role | Social Links |
+|------|------|--------------|
+| **Charu Awasthi** | Lead Mentor | [![GitHub](https://img.shields.io/badge/GitHub-181717?style=flat&logo=github&logoColor=white)](https://github.com/Charu19awasthi) [![LinkedIn](https://img.shields.io/badge/LinkedIn-0A66C2?style=flat&logo=linkedin&logoColor=white)](https://www.linkedin.com/in/charu-awasthi-6312b6293/) |
+| **Pragati Gaykwad** | Technical Mentor | [![GitHub](https://img.shields.io/badge/GitHub-181717?style=flat&logo=github&logoColor=white)](https://github.com/PG-bit997) [![LinkedIn](https://img.shields.io/badge/LinkedIn-0A66C2?style=flat&logo=linkedin&logoColor=white)](https://www.linkedin.com/in/pragati-gaykwad/) |
+
+---
+
+## 🛠️ Technical Info
+
+### Tech Stack
+- **Frontend**: HTML5, CSS3, Vanilla JavaScript, Socket.IO Client
+- **Backend**: Node.js, Express.js, Socket.IO
+- **Database**: Supabase (PostgreSQL with Row Level Security)
+- **Tools**: Sharp (Image processing), PDF-Lib (Watermarking), Lucide Icons
+- **Deployment**: Render
+
+### User Roles
+The system implements 8 distinct roles to ensure strict access control:
+1. **Public Viewer**: Browse public case information.
+2. **Investigator**: Handle case creation and evidence uploads.
+3. **Forensic Analyst**: Perform technical analysis and generate reports.
+4. **Legal Professional**: Conduct legal reviews of cases and evidence.
+5. **Court Official**: Manage judicial proceedings and scheduling.
+6. **Evidence Manager**: Maintain the chain of custody and storage integrity.
+7. **Auditor**: Oversee system compliance and review audit logs.
+8. **Administrator**: Full system oversight, user management, and configuration.
+
+---
+
+## 📁 Folder Structure
+
+```text
+├── build/                    # Compiled contracts and build artifacts
+├── contracts/               # Solidity smart contracts
+├── docs/                    # Detailed project documentation
+├── public/                  # Frontend assets (HTML, JS, CSS)
+│   ├── dashboard-*.html    # Role-specific dashboard views
+│   ├── app.js              # Core frontend logic
+│   └── styles.css          # Global styling
+├── server.js                # Express backend server with Socket.IO
+├── complete-database-setup.sql # Complete core database structure
+├── evidence-tagging-schema.sql # Tags system database schema
+├── evidence-export-schema.sql  # Export system database schema
+├── REAL_TIME_NOTIFICATIONS.md # Notifications implementation details
+├── render.yaml              # Deployment configuration for Render
+├── package.json             # Node.js dependencies and scripts
+├── SECURITY.md              # Security policy and reporting
+└── README.md                # Project documentation
+```
+
+---
+
 ## 📚 Documentation
 
 ### Quick Links
-- 🚀 [Quick Start](#-quick-start)
+- 🚀 [Quick Start](#-how-to-run-locally)
 - 📖 [Complete Documentation](#-complete-documentation)
 - 🔧 [API Reference](docs/API_DOCUMENTATION.md)
 - 👥 [User Roles Guide](docs/USER_ROLES.md)
 - 🚨 [Troubleshooting](docs/TROUBLESHOOTING.md)
-- 🤝 [Contributing](CONTRIBUTING.md)
+- 🤝 [Contributing](Contributing.md)
 
 ### Complete Documentation
 
@@ -71,9 +149,11 @@
 | **API Documentation** | Complete API reference and examples | [📡 API Docs](docs/API_DOCUMENTATION.md) |
 | **User Roles** | Roles, permissions, and access control | [👤 User Roles](docs/USER_ROLES.md) |
 | **Troubleshooting** | Common issues and solutions | [🔧 Troubleshooting](docs/TROUBLESHOOTING.md) |
-| **Contributing** | How to contribute to the project | [🤝 Contributing](CONTRIBUTING.md) |
+| **Contributing** | How to contribute to the project | [🤝 Contributing](Contributing.md) |
 
-## 🚀 Quick Start
+---
+
+## 🚀 How to Run Locally
 
 ### Prerequisites
 - **Node.js** (v16 or higher)
@@ -97,8 +177,8 @@ cp .env.example .env
 ### 2. Database Setup
 ```sql
 -- Run in Supabase SQL Editor:
--- 1. Execute database-schema.sql
--- 2. Execute setup-first-admin.sql with your wallet address
+-- 1. Execute complete-database-setup.sql
+-- 2. Note: You can edit the initial admin wallet address at the end of the file before running.
 ```
 
 ### 3. Start Application
@@ -110,259 +190,33 @@ npm start
 cd public && python -m http.server 8080
 ```
 
-### 4. Access System
-```
-Full System: http://localhost:3001
-Frontend Only: http://localhost:8080
-```
+---
 
-> 📚 **Need detailed setup?** See [Local Development Guide](docs/LOCAL_DEVELOPMENT.md)
+## ⭐ Support & Star
+If you find this project helpful, please consider giving it a **Star**! It helps others discover the project and keeps the maintainers motivated.
 
-## 📁 Project Structure
+---
 
-```
-├── public/                    # Frontend files
-│   ├── index.html            # Main login/registration page
-│   ├── admin.html            # Admin dashboard
-│   ├── dashboard.html        # Role router
-│   ├── dashboard-*.html      # Role-specific dashboards
-│   ├── app.js               # Main application logic
-│   ├── storage.js           # Database client
-│   └── styles.css           # Styling
-├── server.js                 # Express API server
-├── database-schema.sql       # Database setup
-├── setup-first-admin.sql     # First admin creation
-└── package.json             # Dependencies
-```
+## 💬 Suggestions & Feedback
+We value your feedback! If you have suggestions for new features or have found a bug, please:
+- Open an [Issue](https://github.com/Gooichand/blockchain-evidence/issues)
+- Join the discussion in [Discussions](https://github.com/Gooichand/blockchain-evidence/discussions)
 
-## 👥 User Roles
+---
 
-| Role | Access Level | Self-Register | Key Permissions |
-|------|-------------|---------------|----------------|
-| 👁️ **Public Viewer** | View public cases | ✅ Yes | Browse public information |
-| 🕵️ **Investigator** | Create and manage cases | ✅ Yes | Case creation, evidence upload |
-| 🔬 **Forensic Analyst** | Analyze evidence | ✅ Yes | Technical analysis, reports |
-| ⚖️ **Legal Professional** | Legal review | ✅ Yes | Legal documentation, case review |
-| 🏛️ **Court Official** | Court proceedings | ✅ Yes | Judicial processes, scheduling |
-| 📋 **Evidence Manager** | Manage evidence lifecycle | ✅ Yes | Chain of custody, storage |
-| 🔍 **Auditor** | System auditing | ✅ Yes | Compliance, audit reports |
-| 👑 **Administrator** | Full system access | ❌ Admin-only | User management, system config |
+## 🤝 Contribution Guidelines
+Contributions are welcome! Please read our [Contributing.md](Contributing.md) for details on our code of conduct and the process for submitting pull requests.
 
-> 📚 **Detailed permissions:** See [User Roles Documentation](docs/USER_ROLES.md)
-
-## 📊 Analytics & Monitoring
-
-### Google Analytics Integration
-- ✅ **Page View Tracking** - Monitor user navigation patterns
-- ✅ **Custom Event Tracking** - Track user actions and system usage
-- ✅ **Role-Based Analytics** - Understand usage by user role
-- ✅ **Privacy-Compliant** - No PII or sensitive data tracked
-
-### Setup Analytics
-1. Get Google Analytics Measurement ID (G-XXXXXXXXXX)
-2. Update `public/analytics.js` with your ID
-3. Deploy and monitor usage patterns
-4. See `GOOGLE_ANALYTICS_SETUP.md` for detailed setup
-
-### Tracked Events
-- 🔐 User authentication (login/logout)
-- 👤 User registration by role
-- 📁 Dashboard navigation
-- 🔍 Feature usage patterns
-- ⚖️ Admin actions (anonymized)
-
-## 🔧 Admin Features
-
-### User Management
-- ✅ Create regular user accounts
-- ✅ Create additional admin accounts (max 10)
-- ✅ View all system users
-- ✅ Soft delete user accounts
-- ✅ Audit logging for all actions
-
-### Test System
-- ✅ Create test accounts for role testing
-- ✅ Quick login as test users
-- ✅ Test mode indicators in UI
-- ✅ Easy role switching for development
-
-### System Monitoring
-- ✅ Real-time user statistics
-- ✅ System health indicators
-- ✅ Activity monitoring
-- ✅ Database status checks
-
-## 🛡️ Security Features
-
-- **Admin-Only User Creation** - Only admins can create other admins
-- **Role Validation** - Strict role enforcement and validation
-- **Input Sanitization** - XSS prevention and data validation
-- **Audit Logging** - All admin actions logged for compliance
-- **Rate Limiting** - API endpoint protection
-- **Soft Delete** - User data preserved for audit purposes
-
-## 🔄 User Flow
-
-### New User Registration
-1. Connect MetaMask wallet
-2. Select role (7 options available)
-3. Fill registration form
-4. Immediate access to role-specific dashboard
-
-### Admin User Management
-1. Admin logs into admin dashboard
-2. Create users with "Create New User" form
-3. Create additional admins with "Create New Administrator" form
-4. Manage existing users in user table
-5. All actions logged for audit
-
-### Test User Development
-1. Admin creates test accounts
-2. Click "Login As User" to test role interfaces
-3. Test mode clearly indicated in UI
-4. Easy switching between roles for testing
-
-## 🌐 Deployment
-
-### Local Development
-```bash
-npm run dev          # API server with auto-reload
-cd public && python -m http.server 8080  # Frontend only
-```
-
-### Production (Render.com)
-1. Connect GitHub repository
-2. Set environment variables:
-   - `SUPABASE_URL`
-   - `SUPABASE_KEY`
-3. Deploy with render.yaml configuration
-4. Run database setup scripts in Supabase
-
-## 📊 API Endpoints
-
-### Public Endpoints
-- `GET /api/health` - System health check
-- `GET /api/user/:wallet` - Get user information by wallet address
-
-### Admin-Only Endpoints
-- `POST /api/admin/create-user` - Create regular user account
-- `POST /api/admin/create-admin` - Create admin user account
-- `POST /api/admin/delete-user` - Soft delete user account
-- `POST /api/admin/users` - Get all system users
-
-> 📡 **Complete API docs:** See [API Documentation](docs/API_DOCUMENTATION.md)
-
-## 🌐 Deployment Options
-
-### Supported Platforms
-- **Render** (Recommended) - Free tier with auto-deploy
-- **Vercel** - Serverless with global CDN
-- **Netlify** - Static hosting with edge functions
-
-### Quick Deploy
-```bash
-# Render (recommended)
-1. Connect GitHub repository
-2. Set environment variables
-3. Deploy automatically
-
-# Vercel
-vercel --prod
-
-# Netlify
-netlify deploy --prod
-```
-
-> 🚀 **Deployment guide:** See [Deployment Documentation](docs/DEPLOYMENT.md)
-
-## 💰 Cost: $0
-
-- **Supabase Database**: FREE (500MB)
-- **Render Hosting**: FREE
-- **All Features**: FREE
-
-## 🔒 Security Checklist
-
-- ✅ Admin role cannot be self-registered
-- ✅ Users cannot delete their own accounts
-- ✅ Non-admins cannot access admin endpoints
-- ✅ All admin actions are logged
-- ✅ Maximum 10 admin accounts enforced
-- ✅ Input validation and sanitization
-- ✅ Rate limiting on API endpoints
-- ✅ Soft delete only (data preserved)
-
-## 📞 Support & Community
-
-### Getting Help
-- 📚 **Documentation**: Check [docs/](docs/) directory
-- 🐛 **Issues**: Report bugs on [GitHub Issues](https://github.com/Gooichand/blockchain-evidence/issues)
-- 💬 **Discussions**: Join [GitHub Discussions](https://github.com/Gooichand/blockchain-evidence/discussions)
-- 🚑 **Troubleshooting**: See [Troubleshooting Guide](docs/TROUBLESHOOTING.md)
-
-### Quick Diagnostics
-1. **Database**: Check Supabase connection and credentials
-2. **Environment**: Verify all environment variables are set
-3. **Browser**: Check console for JavaScript errors
-4. **Network**: Test API endpoints with `/api/health`
-5. **Audit**: Review `admin_actions` table for system logs
-
-### Contributing
-We welcome contributions! See [Contributing Guide](CONTRIBUTING.md) for:
-- Code style guidelines
-- Development workflow
-- Pull request process
-- Testing requirements
+---
 
 ## 📄 License
-
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
-## 🚀 Roadmap
-
-- [ ] Smart contract integration for evidence hashing
-- [ ] Multi-signature admin operations
-- [ ] Advanced audit reporting
-- [ ] Mobile application
-- [ ] API rate limiting dashboard
-- [ ] Evidence encryption at rest
-- [ ] Integration with external forensic tools
-
 ---
-### ⭐ Stargazers
 
-<a href="https://github.com/Gooichand/blockchain-evidence/stargazers">
-  <img src="https://reporoster.com/stars/Gooichand/blockchain-evidence?type=svg&limit=100&names=false" alt="Stargazers" />
-</a>
+## 📜 Code of Conduct
+We are committed to providing a friendly, safe, and welcoming environment. Please review our [CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md).
 
 ---
 
-### 🍴 Forkers
-
-<a href="https://github.com/Gooichand/blockchain-evidence/network/members">
-  <img src="https://reporoster.com/forks/Gooichand/blockchain-evidence?type=svg&limit=100&names=false" alt="Forkers" />
-</a>
-
----
-**🙌 Support & Star**
-
-***If you find this project helpful, please give it a star ⭐ to support more such educational initiatives!***
-
-<div align="center">
-  <img src="https://user-images.githubusercontent.com/73097560/115834477-dbab4500-a447-11eb-908a-139a6edaec5c.gif" width="100%">
-</div>
-
-<h1 align="center"><img src="https://raw.githubusercontent.com/Tarikul-Islam-Anik/Animated-Fluent-Emojis/master/Emojis/Travel%20and%20places/Glowing%20Star.png" alt="Glowing Star" width="25" height="25" /> Give us a Star and let's make magic! <img src="https://raw.githubusercontent.com/Tarikul-Islam-Anik/Animated-Fluent-Emojis/master/Emojis/Travel%20and%20places/Glowing%20Star.png" alt="Glowing Star" width="25" height="25" /></h1>
-
-<p align="center">
-     <img src="https://raw.githubusercontent.com/Tarikul-Islam-Anik/Animated-Fluent-Emojis/master/Emojis/Objects/Mirror%20Ball.png" alt="Mirror Ball" width="150" height="150" />
-</p>
-
-<div align="center">
-  <img src="https://user-images.githubusercontent.com/73097560/115834477-dbab4500-a447-11eb-908a-139a6edaec5c.gif" width="100%">
-</div>
-
-<h4 align="center">
-
-**Thank you for your support! ❤️**
-**🔐 Secure Evidence Management with Admin Controls** ⚖️
+<p align="right"><a href="#-evid-dgc---blockchain-evidence-management-system">Back to Top ↑</a></p>
