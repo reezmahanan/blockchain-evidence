@@ -329,6 +329,16 @@ function collectFormData() {
     return formData;
 }
 
+/**
+ * Validate registration form values and show the first relevant error alert if validation fails.
+ *
+ * Checks that required fields (firstName, lastName, email, username, password) are present, that
+ * password matches confirmPassword, and that termsAccepted and privacyAccepted are true. If a
+ * validation rule fails the function shows an error alert describing the first failure.
+ *
+ * @param {Object} formData - Collected registration form values (expected keys include `firstName`, `lastName`, `email`, `username`, `password`, `confirmPassword`, `termsAccepted`, `privacyAccepted`).
+ * @returns {boolean} `true` if all validations pass, `false` otherwise.
+ */
 function validateFormData(formData) {
     const requiredFields = ['firstName', 'lastName', 'email', 'username', 'password'];
 
@@ -352,6 +362,14 @@ function validateFormData(formData) {
     return true;
 }
 
+/**
+ * Connects the user's Ethereum wallet, updates the UI, and checks or creates the user's registration state.
+ *
+ * Performs network and provider availability checks, handles a demo fallback, prompts to install MetaMask if absent,
+ * requests account access, enforces the configured target network, handles a special admin wallet shortcut,
+ * updates the wallet display, and launches the registration status flow. Displays contextual error modals for
+ * common wallet/provider failures.
+ */
 async function connectWallet() {
     closeErrorModal();
 
@@ -696,6 +714,10 @@ function getAlertIcon(type) {
     return icons[type] || 'info';
 }
 
+/**
+ * Scrolls the page smoothly to the element with the given ID.
+ * @param {string} sectionId - The ID of the target DOM element; does nothing if no element with that ID exists.
+ */
 function scrollToSection(sectionId) {
     const element = document.getElementById(sectionId);
     if (element) {
@@ -707,6 +729,19 @@ function scrollToSection(sectionId) {
 }
 
 // Error Handling & Network Helpers
+/**
+ * Display an error modal with a title, HTML description, and an optional action button.
+ *
+ * If the expected modal elements exist in the DOM, the function populates the title and
+ * description, shows or hides the action button based on `actionText`/`actionCallback`,
+ * and activates the modal. If modal elements are missing, falls back to calling
+ * `showAlert` with a combined error message.
+ *
+ * @param {string} title - The modal title text.
+ * @param {string} description - The modal description; may include HTML.
+ * @param {string|null} [actionText=null] - Text for the optional action button; when null the button is hidden.
+ * @param {Function|null} [actionCallback=null] - Callback invoked when the action button is clicked.
+ */
 function showErrorModal(title, description, actionText = null, actionCallback = null) {
     const modal = document.getElementById('errorModal');
     const titleEl = document.getElementById('errorTitle');
@@ -730,11 +765,25 @@ function showErrorModal(title, description, actionText = null, actionCallback = 
     }
 }
 
+/**
+ * Closes the error modal if it exists in the DOM.
+ *
+ * Locates the element with id "errorModal" and removes its "active" class to hide it.
+ */
 function closeErrorModal() {
     const modal = document.getElementById('errorModal');
     if (modal) modal.classList.remove('active');
 }
 
+/**
+ * Ensure the connected wallet is on the configured target network.
+ *
+ * If no Ethereum provider is present or the wallet's chain ID does not match the configured TARGET_CHAIN_ID,
+ * a modal is shown prompting the user to switch networks and offering an action that attempts to switch the wallet's chain.
+ * If the switch action fails or the network is not available in the wallet, appropriate error modals are displayed.
+ *
+ * @returns {Promise<boolean>} `true` if the wallet is on the target network, `false` otherwise.
+ */
 async function checkNetwork() {
     if (!window.ethereum) return false;
     const currentChainId = await window.ethereum.request({ method: 'eth_chainId' });
