@@ -6,7 +6,7 @@
 [![Node.js Version](https://img.shields.io/badge/node-%3E%3D16.0.0-brightgreen)](https://nodejs.org/)
 [![Supabase](https://img.shields.io/badge/Database-Supabase-green)](https://supabase.com/)
 [![Deployment](https://img.shields.io/badge/Deploy-Render-blue)](https://render.com/)
-
+[![OpenSSF Best Practices](https://www.bestpractices.dev/projects/11669/badge)](https://www.bestpractices.dev/projects/11669)
 
 
 <div align="center">
