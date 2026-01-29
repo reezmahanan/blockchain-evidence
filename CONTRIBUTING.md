@@ -2,6 +2,12 @@
 **Check this for your contribute certificates** 
 https://evid-dgc-certificates.onrender.com/
 
+**To know understand how EVID-DGC works see this Youtube video**
+YT English --- https://youtu.be/kN0cb3W8CuM
+YT Hindi-- https://youtu.be/rMMn96qQSYI
+YT Telugu -- https://youtu.be/qLFbRyZmbkw 
+LIVE link Project --https://blockchain-evidence.onrender.com/
+
 Thank you for your interest in contributing to EVID-DGC! We welcome contributions from developers, security researchers, legal professionals, and anyone passionate about improving digital evidence management.
 
 ## 📋 Table of Contents
