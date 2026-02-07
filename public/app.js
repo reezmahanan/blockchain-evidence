@@ -308,6 +308,30 @@ function setupModalClickOutside(modalId, closeFunction) {
   }
 }
 
+// Toggle password visibility
+function togglePasswordVisibility(inputId) {
+  const input = document.getElementById(inputId);
+  const toggleBtn = document.querySelector(`button[onclick="togglePasswordVisibility('${inputId}')"]`);
+
+  if (!input || !toggleBtn) return;
+
+  const icon = toggleBtn.querySelector('i');
+
+  if (input.type === 'password') {
+    input.type = 'text';
+    if (icon) {
+      icon.setAttribute('data-lucide', 'eye-off');
+      lucide.createIcons();
+    }
+  } else {
+    input.type = 'password';
+    if (icon) {
+      icon.setAttribute('data-lucide', 'eye');
+      lucide.createIcons();
+    }
+  }
+}
+
 // Wallet connection
 async function connectWallet() {
   console.log("Attempting to connect wallet...");
