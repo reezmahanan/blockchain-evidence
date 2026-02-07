@@ -10,7 +10,7 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    z-index: 10000; /* Fixed: Reduced from 999999 to 10000 */
+    z-index: 10000;
     overflow: hidden;
 }
 
@@ -272,7 +272,7 @@
         linear-gradient(90deg, rgba(255, 0, 34, 0.03), transparent);
     background-size: 100% 4px, 4px 100%;
     pointer-events: none;
-    animation: loading-glitch 0.1s infinite; /* Fixed: Changed from glitch to loading-glitch */
+    animation: loading-glitch 0.1s infinite; 
     opacity: 0.3;
     z-index: 1;
 }
@@ -302,7 +302,7 @@
     0%, 100% { transform: translateX(0); }
     50% { transform: translateX(1px); }
 }
-
+/* Additional styles for fade-out effect */
 /* Fade out transition - NEW: Added missing fade-out class */
 #loading-screen.fade-out {
     opacity: 0;

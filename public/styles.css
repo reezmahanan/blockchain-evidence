@@ -2114,6 +2114,7 @@ body {
     background: #6c757d;
 }
 
+/*Responsive adjustments for timeline */
 @media (max-width: 768px) {
     .timeline-controls {
         flex-direction: column;
@@ -2152,7 +2153,7 @@ body {
     margin-bottom: 2rem;
     padding-bottom: 1.5rem;
     border-bottom: 1px solid var(--border-light);
-    
+
 }
 
 .privacy-content section:last-child, .data-protection-content section:last-child {

@@ -147,7 +147,7 @@ document.addEventListener('DOMContentLoaded', function () {
     loadingTimeouts.push(safetyTimeout);
 
     initLoadingScreen();
-    
+    // Expose debug functions for testing
     window.debugLoadingScreen = {
         forceComplete: function() {
             console.log('Manual force complete triggered');
