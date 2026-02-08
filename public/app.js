@@ -771,11 +771,23 @@ function showAlert(message, type = "info") {
 
   const alert = document.createElement("div");
   alert.className = `alert alert-${type}`;
+
+  // Add accessibility attributes for screen readers
+  // Use role="alert" for urgent messages (errors/warnings) - announces immediately
+  // Use role="status" for informational messages - announces politely
+  if (type === "error" || type === "warning") {
+    alert.setAttribute("role", "alert");
+    alert.setAttribute("aria-live", "assertive");
+  } else {
+    alert.setAttribute("role", "status");
+    alert.setAttribute("aria-live", "polite");
+  }
+
   alert.innerHTML = `
         <div style="display: flex; align-items: center; gap: 8px;">
             <i data-lucide="${getAlertIcon(
     type
-  )}" style="width: 16px; height: 16px;"></i>
+  )}" style="width: 16px; height: 16px;" aria-hidden="true"></i>
             <span>${message}</span>
         </div>
     `;
