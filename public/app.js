@@ -48,6 +48,7 @@ function initializeApp() {
     initializeParticles();
     initializeFAQ();
     initializeEmailLogin();
+    updateNavbarAuth();
 
     // Add click handler for wallet connection
     const connectBtn = document.getElementById("connectWallet");
@@ -83,11 +84,26 @@ function scrollToTop() {
 function scrollToSection(sectionId) {
   const element = document.getElementById(sectionId);
   if (element) {
-    if(lenis){
-        lenis.scrollTo(element);
-    }else{
-        element.scrollIntoView({behavior:"smooth",block:"start"})
+    if (lenis) {
+      lenis.scrollTo(element);
+    } else {
+      element.scrollIntoView({ behavior: "smooth", block: "start" })
     }
+  }
+}
+
+// Helper to toggle scroll state
+function toggleScroll(enable) {
+  if (enable) {
+    document.body.classList.remove('modal-open');
+    // We don't need to stop/start lenis if we use data-lenis-prevent
+    // but stopping it ensures background doesn't move at all
+    // however, stopping it might freeze standard scroll if not handled rights
+    // Let's try JUST using body class + overscroll-behavior
+    if (lenis) lenis.start();
+  } else {
+    document.body.classList.add('modal-open');
+    if (lenis) lenis.stop(); // Stop Lenis to freeze background
   }
 }
 
@@ -97,6 +113,7 @@ function showEmailLogin() {
   const modal = document.getElementById("emailLoginModal");
   if (modal) {
     modal.classList.add("active");
+    toggleScroll(false);
   }
 }
 
@@ -104,6 +121,7 @@ function closeEmailLogin() {
   const modal = document.getElementById("emailLoginModal");
   if (modal) {
     modal.classList.remove("active");
+    toggleScroll(true);
   }
 }
 
@@ -111,6 +129,7 @@ function showEmailRegistration() {
   const modal = document.getElementById("emailRegistrationModal");
   if (modal) {
     modal.classList.add("active");
+    toggleScroll(false);
   }
 }
 
@@ -118,6 +137,7 @@ function closeEmailRegistration() {
   const modal = document.getElementById("emailRegistrationModal");
   if (modal) {
     modal.classList.remove("active");
+    toggleScroll(true);
   }
 }
 
@@ -168,6 +188,7 @@ async function handleEmailLogin(event) {
         displayUserInfo(data.user);
         toggleSections("alreadyRegistered");
       }
+      updateNavbarAuth();
     } else {
       showAlert(data.error || "Login failed", "error");
     }
@@ -267,6 +288,49 @@ function initializeEmailLogin() {
   const emailRegForm = document.getElementById("emailRegistrationForm");
   if (emailRegForm) {
     emailRegForm.addEventListener("submit", handleEmailRegistration);
+  }
+
+  // Add click outside to close for all modals
+  setupModalClickOutside('emailLoginModal', closeEmailLogin);
+  setupModalClickOutside('emailRegistrationModal', closeEmailRegistration);
+  setupModalClickOutside('forgotPasswordModal', closeForgotPasswordModal);
+  setupModalClickOutside('errorModal', closeErrorModal);
+}
+
+// Helper function to setup click outside to close modal
+function setupModalClickOutside(modalId, closeFunction) {
+  const modal = document.getElementById(modalId);
+  if (modal) {
+    modal.addEventListener('click', function (event) {
+      // Only close if clicking directly on the modal backdrop, not the content
+      if (event.target === modal) {
+        closeFunction();
+      }
+    });
+  }
+}
+
+// Toggle password visibility
+function togglePasswordVisibility(inputId) {
+  const input = document.getElementById(inputId);
+  const toggleBtn = document.querySelector(`button[onclick="togglePasswordVisibility('${inputId}')"]`);
+
+  if (!input || !toggleBtn) return;
+
+  const icon = toggleBtn.querySelector('i');
+
+  if (input.type === 'password') {
+    input.type = 'text';
+    if (icon) {
+      icon.setAttribute('data-lucide', 'eye-off');
+      lucide.createIcons();
+    }
+  } else {
+    input.type = 'password';
+    if (icon) {
+      icon.setAttribute('data-lucide', 'eye');
+      lucide.createIcons();
+    }
   }
 }
 
@@ -418,6 +482,7 @@ async function checkRegistrationStatus() {
       } else {
         toggleSections("alreadyRegistered");
       }
+      updateNavbarAuth();
     } else {
       console.log("No existing user found, showing registration");
       toggleSections("registration");
@@ -458,6 +523,35 @@ function displayUserInfo(userData) {
       .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
       .join(" ");
     userRoleName.textContent = roleName;
+  }
+}
+
+function updateNavbarAuth() {
+  const loginBtn = document.getElementById('navLoginBtn');
+  const dashboardBtn = document.getElementById('navDashboardBtn');
+  const logoutBtn = document.getElementById('navLogoutBtn');
+
+  if (!loginBtn || !dashboardBtn || !logoutBtn) return;
+
+  const currentUser = localStorage.getItem('currentUser');
+
+  if (currentUser) {
+    loginBtn.classList.add('hidden');
+    dashboardBtn.classList.remove('hidden');
+    logoutBtn.classList.remove('hidden');
+
+    // Ensure buttons have correct display style since valid-hidden might enforce display:none
+    dashboardBtn.style.display = 'inline-flex';
+    logoutBtn.style.display = 'inline-flex';
+    loginBtn.style.display = 'none';
+  } else {
+    loginBtn.classList.remove('hidden');
+    dashboardBtn.classList.add('hidden');
+    logoutBtn.classList.add('hidden');
+
+    loginBtn.style.display = 'inline-flex';
+    dashboardBtn.style.display = 'none';
+    logoutBtn.style.display = 'none';
   }
 }
 
@@ -540,6 +634,7 @@ async function handleRegistration(event) {
       setTimeout(() => {
         window.location.href = getDashboardUrl(data.user.role);
       }, 2000);
+      updateNavbarAuth();
     } else {
       showAlert(data.error || "Registration failed", "error");
     }
@@ -576,6 +671,7 @@ function logout() {
   }
 
   initializeSections();
+  updateNavbarAuth();
   showAlert("Logged out successfully", "info");
 }
 
@@ -595,6 +691,7 @@ function disconnectWallet() {
   }
 
   initializeSections();
+  updateNavbarAuth();
   showAlert("Wallet disconnected successfully", "info");
 }
 
@@ -733,11 +830,23 @@ function showAlert(message, type = "info") {
 
   const alert = document.createElement("div");
   alert.className = `alert alert-${type}`;
+
+  // Add accessibility attributes for screen readers
+  // Use role="alert" for urgent messages (errors/warnings) - announces immediately
+  // Use role="status" for informational messages - announces politely
+  if (type === "error" || type === "warning") {
+    alert.setAttribute("role", "alert");
+    alert.setAttribute("aria-live", "assertive");
+  } else {
+    alert.setAttribute("role", "status");
+    alert.setAttribute("aria-live", "polite");
+  }
+
   alert.innerHTML = `
         <div style="display: flex; align-items: center; gap: 8px;">
             <i data-lucide="${getAlertIcon(
-              type
-            )}" style="width: 16px; height: 16px;"></i>
+    type
+  )}" style="width: 16px; height: 16px;" aria-hidden="true"></i>
             <span>${message}</span>
         </div>
     `;
@@ -791,6 +900,8 @@ function showErrorModal(
       actionBtn.classList.add("hidden");
     }
     modal.classList.add("active");
+    if (typeof toggleScroll === 'function') toggleScroll(false);
+    else document.body.classList.add("modal-open");
   } else {
     showAlert(`${title}: ${description}`, "error");
   }
@@ -798,7 +909,11 @@ function showErrorModal(
 
 function closeErrorModal() {
   const modal = document.getElementById("errorModal");
-  if (modal) modal.classList.remove("active");
+  if (modal) {
+    modal.classList.remove("active");
+    if (typeof toggleScroll === 'function') toggleScroll(true);
+    else document.body.classList.remove("modal-open");
+  }
 }
 
 // Ethereum event listeners
@@ -818,10 +933,18 @@ if (window.ethereum) {
 
 // Helper function to get dashboard URL based on role
 function getDashboardUrl(role) {
-  if (role === "admin") {
-    return "dashboard-admin.html";
-  }
-  return `dashboard-${role.replace("_", "-")}.html`;
+  const dashboardMap = {
+    'public_viewer': 'dashboard-public.html',
+    'investigator': 'dashboard-investigator.html',
+    'forensic_analyst': 'dashboard-analyst.html',
+    'legal_professional': 'dashboard-legal.html',
+    'court_official': 'dashboard-court.html',
+    'evidence_manager': 'dashboard-manager.html',
+    'auditor': 'dashboard-auditor.html',
+    'admin': 'admin.html'
+  };
+
+  return dashboardMap[role] || 'dashboard.html';
 }
 
 // Global exports

@@ -4,8 +4,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="icon" href="favicon.png" type="image/png"><link rel="shortcut icon" href="favicon.png" type="image/png"><title>Analyst | EVID-DGC</title>
+    <link rel="icon" href="favicon.png" type="image/png">
+    <link rel="shortcut icon" href="favicon.png" type="image/png">
+    <title>Analyst | EVID-DGC</title>
     <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="responsive-improvements.css">
     <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
     <script src="fixed-navbar.js"></script>
     <style>
@@ -213,8 +216,8 @@
                         <p><strong>Priority:</strong> <span style="color: #ef4444; font-weight: bold;">HIGH</span></p>
                         <p><strong>Requested:</strong> March 15, 2024</p>
                         <div style="margin-top: 15px;">
-                            <button class="btn btn-sm btn-primary">Start Analysis</button>
-                            <button class="btn btn-sm btn-outline">View Details</button>
+                            <button class="btn btn-sm btn-primary" onclick="startAnalysis('FOR-2024-001')">Start Analysis</button>
+                            <button class="btn btn-sm btn-outline" onclick="viewEvidenceDetails('FOR-2024-001')">View Details</button>
                         </div>
                     </div>
 
@@ -229,8 +232,8 @@
                         <p><strong>Priority:</strong> <span style="color: #f59e0b; font-weight: bold;">MEDIUM</span></p>
                         <p><strong>Started:</strong> March 14, 2024</p>
                         <div style="margin-top: 15px;">
-                            <button class="btn btn-sm btn-warning">Continue Analysis</button>
-                            <button class="btn btn-sm btn-outline">Progress Report</button>
+                            <button class="btn btn-sm btn-warning" onclick="continueAnalysis('FOR-2024-002')">Continue Analysis</button>
+                            <button class="btn btn-sm btn-outline" onclick="showProgressReport('FOR-2024-002')">Progress Report</button>
                         </div>
                     </div>
 
@@ -245,8 +248,8 @@
                         <p><strong>Priority:</strong> <span style="color: #10b981; font-weight: bold;">LOW</span></p>
                         <p><strong>Completed:</strong> March 13, 2024</p>
                         <div style="margin-top: 15px;">
-                            <button class="btn btn-sm btn-success">View Report</button>
-                            <button class="btn btn-sm btn-outline">Archive</button>
+                            <button class="btn btn-sm btn-success" onclick="viewAnalysisReport('FOR-2024-003')">View Report</button>
+                            <button class="btn btn-sm btn-outline" onclick="archiveEvidence('FOR-2024-003')">Archive</button>
                         </div>
                     </div>
                 </div>
@@ -375,6 +378,38 @@
             alert('🔄 Refreshing analysis queue...\n\nUpdating:\n• New evidence submissions\n• Priority changes\n• Analysis progress\n• Equipment availability\n• Lab scheduling');
         }
 
+        function startAnalysis(caseId) {
+            alert('🔬 Starting Analysis\n\nCase ID: ' + caseId + '\n\nInitializing:\n• Evidence verification\n• Lab equipment preparation\n• Protocol selection\n• Analysis workflow\n• Documentation setup');
+            // Add your analysis start logic here
+        }
+
+        function viewEvidenceDetails(caseId) {
+            alert('📋 Evidence Details\n\nCase ID: ' + caseId + '\n\nViewing:\n• Evidence metadata\n• Chain of custody\n• Collection information\n• Storage location\n• Related documents');
+            // Redirect to evidence details page or open modal
+        }
+
+        function continueAnalysis(caseId) {
+            alert('▶️ Continue Analysis\n\nCase ID: ' + caseId + '\n\nResuming:\n• Previous analysis state\n• Work in progress\n• Partial results\n• Next analysis steps\n• Equipment allocation');
+            // Add your continue analysis logic here
+        }
+
+        function showProgressReport(caseId) {
+            alert('📊 Progress Report\n\nCase ID: ' + caseId + '\n\nShowing:\n• Completion percentage\n• Timeline status\n• Tasks completed\n• Pending procedures\n• Resource utilization');
+            // Display progress report modal or page
+        }
+
+        function viewAnalysisReport(caseId) {
+            alert('📄 Analysis Report\n\nCase ID: ' + caseId + '\n\nReport includes:\n• Methodology\n• Findings\n• Conclusions\n• Supporting data\n• Expert opinion\n• Recommendations');
+            // Redirect to report viewer
+        }
+
+        function archiveEvidence(caseId) {
+            if (confirm('Archive this evidence?\n\nCase ID: ' + caseId + '\n\nThis will move the evidence to the archive and mark analysis as complete.')) {
+                alert('✅ Evidence Archived\n\nCase ID: ' + caseId + '\n\nArchived successfully:\n• Analysis complete\n• Report finalized\n• Data preserved\n• Storage updated');
+                // Add your archive logic here
+            }
+        }
+
         function logout() {
             if (confirm('Are you sure you want to logout?')) {
                 localStorage.clear();
@@ -382,6 +417,7 @@
             }
         }
     </script>
+    <script src="footer.js"></script>
 </body>
 
 </html>

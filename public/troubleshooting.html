@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Troubleshooting - EVID-DGC</title>
+    <meta name="description" content="Common issues and solutions for EVID-DGC blockchain evidence management system.">
+    <link rel="icon" href="favicon.ico" type="image/x-icon">
+    <link rel="icon" sizes="32x32" href="logo-32x32.png" type="image/png">
+    <link rel="stylesheet" href="css/docs.css">
+    <link rel="stylesheet" href="responsive-improvements.css">
+</head>
+
+<body>
+    <div class="container">
+        <div class="sidebar">
+            <div class="logo">📚 EVID-DGC Docs</div>
+            <h3>Documentation</h3>
+            <ul>
+                <li><a href="quickstart.html">Quick Start</a></li>
+                <li><a href="user-roles.html">User Roles</a></li>
+                <li><a href="api-reference.html">API Reference</a></li>
+                <li><a href="troubleshooting.html" class="active">Troubleshooting</a></li>
+            </ul>
+            <hr style="margin: 20px 0; border: none; border-top: 1px solid #ddd;">
+            <h3>Help</h3>
+            <ul>
+                <li><a href="index.html">← Back to Home</a></li>
+                <li><a href="mailto:DGC2MHNE@proton.me">Contact Support</a></li>
+            </ul>
+        </div>
+        <div class="main-content">
+            <a href="index.html" class="back-button">← Back to Home</a>
+
+            <!-- Mobile Navigation Fallback -->
+            <div class="mobile-nav">
+                <h4>📚 Documentation</h4>
+                <div class="mobile-nav-links">
+                    <a href="quickstart.html">Quick Start</a>
+                    <a href="user-roles.html">User Roles</a>
+                    <a href="api-reference.html">API Reference</a>
+                    <a href="troubleshooting.html" class="active">Troubleshooting</a>
+                </div>
+            </div>
+
+            <div class="breadcrumb">
+                <a href="index.html">Home</a> &gt; <span>Troubleshooting</span>
+            </div>
+            <h1>Troubleshooting</h1>
+            <p class="subtitle">Common issues and solutions</p>
+
+            <div class="info-card">
+                <h3>🔧 Need Help?</h3>
+                <p>If you can't find a solution below, contact our support team at <a href="mailto:DGC2MHNE@proton.me"
+                        style="color: #D32F2F;">DGC2MHNE@proton.me</a></p>
+            </div>
+
+            <h2>Login Issues</h2>
+
+            <div class="issue-card">
+                <div class="issue-title">❌ MetaMask Not Connecting</div>
+                <p class="issue-description">The "Connect MetaMask" button doesn't respond or shows an error.</p>
+                <div class="solution">
+                    <strong>✅ Solution:</strong>
+                    <ul>
+                        <li>Make sure MetaMask extension is installed in your browser</li>
+                        <li>Check that MetaMask is unlocked (enter your password)</li>
+                        <li>Try refreshing the page</li>
+                        <li>Disable other wallet extensions that might conflict</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="issue-card">
+                <div class="issue-title">❌ Wrong Network Error</div>
+                <p class="issue-description">You see a message about being on the wrong network.</p>
+                <div class="solution">
+                    <strong>✅ Solution:</strong>
+                    <ul>
+                        <li>Open MetaMask and switch to the Polygon network</li>
+                        <li>If Polygon is not available, add it manually:
+                            <ul>
+                                <li>Network Name: Polygon Mainnet</li>
+                                <li>RPC URL: https://polygon-rpc.com</li>
+                                <li>Chain ID: 137</li>
+                                <li>Symbol: MATIC</li>
+                            </ul>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="issue-card">
+                <div class="issue-title">❌ Email Login Fails</div>
+                <p class="issue-description">Unable to log in with email and password.</p>
+                <div class="solution">
+                    <strong>✅ Solution:</strong>
+                    <ul>
+                        <li>Double-check your email address for typos</li>
+                        <li>Ensure your password is correct (case-sensitive)</li>
+                        <li>Try resetting your password if you forgot it</li>
+                        <li>Clear browser cache and cookies, then try again</li>
+                    </ul>
+                </div>
+            </div>
+
+            <h2>Upload Issues</h2>
+
+            <div class="issue-card">
+                <div class="issue-title">❌ File Too Large</div>
+                <p class="issue-description">Error message says the file exceeds the maximum size.</p>
+                <div class="solution">
+                    <strong>✅ Solution:</strong>
+                    <ul>
+                        <li>Maximum file size is 100MB per file</li>
+                        <li>Compress large files before uploading</li>
+                        <li>For videos, consider reducing resolution or using compression tools</li>
+                        <li>Split large archives into smaller parts</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="issue-card">
+                <div class="issue-title">❌ Unsupported File Format</div>
+                <p class="issue-description">The system doesn't accept your file type.</p>
+                <div class="solution">
+                    <strong>✅ Solution:</strong>
+                    <ul>
+                        <li>Supported formats:
+                            <ul>
+                                <li><strong>Images:</strong> JPEG, PNG, GIF</li>
+                                <li><strong>Videos:</strong> MP4, AVI, MOV</li>
+                                <li><strong>Audio:</strong> MP3, WAV, M4A</li>
+                                <li><strong>Documents:</strong> PDF, DOC, DOCX, TXT</li>
+                                <li><strong>Archives:</strong> ZIP, RAR</li>
+                            </ul>
+                        </li>
+                        <li>Convert your file to a supported format before uploading</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="issue-card">
+                <div class="issue-title">❌ Upload Fails / Times Out</div>
+                <p class="issue-description">The upload process stops or shows a timeout error.</p>
+                <div class="solution">
+                    <strong>✅ Solution:</strong>
+                    <ul>
+                        <li>Check your internet connection stability</li>
+                        <li>Try uploading during off-peak hours</li>
+                        <li>For large files, use a wired connection instead of WiFi</li>
+                        <li>Refresh the page and try again</li>
+                    </ul>
+                </div>
+            </div>
+
+            <h2>Access Issues</h2>
+
+            <div class="issue-card">
+                <div class="issue-title">❌ Permission Denied</div>
+                <p class="issue-description">You see a message that you don't have permission to access this feature.
+                </p>
+                <div class="solution">
+                    <strong>✅ Solution:</strong>
+                    <ul>
+                        <li>Your current role may not have access to this feature</li>
+                        <li>Check the <a href="user-roles.html" style="color: #4CAF50;">User Roles</a> page to
+                            understand permissions</li>
+                        <li>Contact your administrator to update your role if needed</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="issue-card">
+                <div class="issue-title">❌ Page Not Loading</div>
+                <p class="issue-description">Pages are blank or stuck loading.</p>
+                <div class="solution">
+                    <strong>✅ Solution:</strong>
+                    <ul>
+                        <li>Clear your browser cache and cookies</li>
+                        <li>Try using a different browser (Chrome, Firefox, Edge)</li>
+                        <li>Disable browser extensions that might interfere</li>
+                        <li>Check if the system is under maintenance</li>
+                    </ul>
+                </div>
+            </div>
+
+            <h2>System Errors</h2>
+
+            <div class="issue-card">
+                <div class="issue-title">❌ 500 Internal Server Error</div>
+                <p class="issue-description">The server encountered an unexpected error.</p>
+                <div class="solution">
+                    <strong>✅ Solution:</strong>
+                    <ul>
+                        <li>Wait a few minutes and try again</li>
+                        <li>The system may be experiencing high load</li>
+                        <li>If the problem persists, contact the administrator</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="issue-card">
+                <div class="issue-title">❌ Network Connection Error</div>
+                <p class="issue-description">Unable to connect to the server.</p>
+                <div class="solution">
+                    <strong>✅ Solution:</strong>
+                    <ul>
+                        <li>Check your internet connection</li>
+                        <li>Try refreshing the page</li>
+                        <li>Check if you can access other websites</li>
+                        <li>The server may be temporarily offline for maintenance</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="issue-card">
+                <div class="issue-title">❌ Database Error</div>
+                <p class="issue-description">Error messages related to database operations.</p>
+                <div class="solution">
+                    <strong>✅ Solution:</strong>
+                    <ul>
+                        <li>The system may be under maintenance</li>
+                        <li>Wait a few minutes and try again</li>
+                        <li>Contact the system administrator if the error persists</li>
+                    </ul>
+                </div>
+            </div>
+
+            <h2>Still Need Help?</h2>
+
+            <div class="warning-box">
+                <strong>⚠️ Before Contacting Support:</strong>
+                <ul style="margin-left: 20px; margin-top: 10px;">
+                    <li>Note down the exact error message</li>
+                    <li>Take a screenshot of the issue</li>
+                    <li>Note what steps led to the error</li>
+                    <li>Try the solutions above first</li>
+                </ul>
+            </div>
+
+            <div class="info-card">
+                <h3>📧 Contact Support</h3>
+                <p><strong>Email:</strong> <a href="mailto:DGC2MHNE@proton.me"
+                        style="color: #D32F2F;">DGC2MHNE@proton.me</a></p>
+                <p><strong>GitHub Issues:</strong> <a href="https://github.com/Gooichand/blockchain-evidence/issues"
+                        target="_blank" style="color: #D32F2F;">Report a Bug</a></p>
+            </div>
+
+            <div class="doc-footer">
+                Need help? Contact us at <strong>DGC2MHNE@proton.me</strong>
+            </div>
+        </div>
+    </div>
+    <script src="footer.js"></script>
+</body>
+
+</html>

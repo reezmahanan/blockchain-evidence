@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>API Reference - EVID-DGC</title>
+    <meta name="description" content="Complete API documentation for EVID-DGC blockchain evidence management system.">
+    <link rel="icon" href="favicon.ico" type="image/x-icon">
+    <link rel="icon" sizes="32x32" href="logo-32x32.png" type="image/png">
+    <link rel="stylesheet" href="css/docs.css">
+    <link rel="stylesheet" href="responsive-improvements.css">
+</head>
+
+<body>
+    <div class="container">
+        <div class="sidebar">
+            <div class="logo">📚 EVID-DGC Docs</div>
+            <h3>Documentation</h3>
+            <ul>
+                <li><a href="quickstart.html">Quick Start</a></li>
+                <li><a href="user-roles.html">User Roles</a></li>
+                <li><a href="api-reference.html" class="active">API Reference</a></li>
+                <li><a href="troubleshooting.html">Troubleshooting</a></li>
+            </ul>
+            <hr style="margin: 20px 0; border: none; border-top: 1px solid #ddd;">
+            <h3>Help</h3>
+            <ul>
+                <li><a href="index.html">← Back to Home</a></li>
+                <li><a href="mailto:DGC2MHNE@proton.me">Contact Support</a></li>
+            </ul>
+        </div>
+        <div class="main-content">
+            <a href="index.html" class="back-button">← Back to Home</a>
+
+            <!-- Mobile Navigation Fallback -->
+            <div class="mobile-nav">
+                <h4>📚 Documentation</h4>
+                <div class="mobile-nav-links">
+                    <a href="quickstart.html">Quick Start</a>
+                    <a href="user-roles.html">User Roles</a>
+                    <a href="api-reference.html" class="active">API Reference</a>
+                    <a href="troubleshooting.html">Troubleshooting</a>
+                </div>
+            </div>
+
+            <div class="breadcrumb">
+                <a href="index.html">Home</a> &gt; <span>API Reference</span>
+            </div>
+            <h1>API Reference</h1>
+            <p class="subtitle">Complete API documentation for developers</p>
+
+            <div class="info-card">
+                <h3>🔗 Base URL</h3>
+                <p>All API endpoints are relative to: <code>https://blockchain-evidence.onrender.com/api</code></p>
+            </div>
+
+            <h2>Authentication</h2>
+
+            <div class="api-endpoint">
+                <span class="method method-post">POST</span>
+                <span class="endpoint-path">/auth/email-login</span>
+                <p class="endpoint-description">Authenticate user with email and password</p>
+                <div class="code-block">
+                    {
+                    "email": "user@example.com",
+                    "password": "your_password"
+                    }
+                </div>
+            </div>
+
+            <div class="api-endpoint">
+                <span class="method method-post">POST</span>
+                <span class="endpoint-path">/auth/email-register</span>
+                <p class="endpoint-description">Register a new user with email</p>
+                <div class="code-block">
+                    {
+                    "email": "user@example.com",
+                    "password": "your_password",
+                    "fullName": "John Doe",
+                    "role": "investigator"
+                    }
+                </div>
+            </div>
+
+            <div class="api-endpoint">
+                <span class="method method-post">POST</span>
+                <span class="endpoint-path">/auth/wallet-register</span>
+                <p class="endpoint-description">Register a new user with MetaMask wallet</p>
+                <div class="code-block">
+                    {
+                    "walletAddress": "0x...",
+                    "fullName": "John Doe",
+                    "role": "investigator",
+                    "department": "Crime Unit",
+                    "badgeNumber": "12345"
+                    }
+                </div>
+            </div>
+
+            <h2>Evidence Management</h2>
+
+            <div class="api-endpoint">
+                <span class="method method-post">POST</span>
+                <span class="endpoint-path">/evidence/upload</span>
+                <p class="endpoint-description">Upload evidence file to a case (multipart/form-data)</p>
+                <table>
+                    <tr>
+                        <th>Parameter</th>
+                        <th>Type</th>
+                        <th>Description</th>
+                    </tr>
+                    <tr>
+                        <td><code>file</code></td>
+                        <td>File</td>
+                        <td>Evidence file (max 100MB)</td>
+                    </tr>
+                    <tr>
+                        <td><code>caseId</code></td>
+                        <td>String</td>
+                        <td>Target case ID</td>
+                    </tr>
+                    <tr>
+                        <td><code>description</code></td>
+                        <td>String</td>
+                        <td>Evidence description</td>
+                    </tr>
+                </table>
+            </div>
+
+            <div class="api-endpoint">
+                <span class="method method-post">POST</span>
+                <span class="endpoint-path">/evidence/{id}/download</span>
+                <p class="endpoint-description">Download evidence file with watermark</p>
+                <p class="method-note">Uses POST instead of GET because the request includes a body payload with user
+                    wallet address for watermarking and audit logging purposes.</p>
+            </div>
+
+            <div class="api-endpoint">
+                <span class="method method-post">POST</span>
+                <span class="endpoint-path">/evidence/bulk-export</span>
+                <p class="endpoint-description">Export multiple evidence files as ZIP archive</p>
+            </div>
+
+            <div class="api-endpoint">
+                <span class="method method-post">POST</span>
+                <span class="endpoint-path">/evidence/verify-integrity</span>
+                <p class="endpoint-description">Verify file integrity using blockchain hash</p>
+            </div>
+
+            <h2>User Management</h2>
+
+            <div class="api-endpoint">
+                <span class="method method-get">GET</span>
+                <span class="endpoint-path">/user/{wallet}</span>
+                <p class="endpoint-description">Get user information by wallet address</p>
+            </div>
+
+            <div class="api-endpoint">
+                <span class="method method-put">PUT</span>
+                <span class="endpoint-path">/user/profile/{id}</span>
+                <p class="endpoint-description">Update user profile information</p>
+            </div>
+
+            <h2>Admin Endpoints</h2>
+            <p><em>These endpoints require administrator privileges.</em></p>
+
+            <div class="api-endpoint">
+                <span class="method method-get">GET</span>
+                <span class="endpoint-path">/admin/users</span>
+                <p class="endpoint-description">List all registered users</p>
+            </div>
+
+            <div class="api-endpoint">
+                <span class="method method-post">POST</span>
+                <span class="endpoint-path">/admin/create-user</span>
+                <p class="endpoint-description">Create a new user account</p>
+            </div>
+
+            <div class="api-endpoint">
+                <span class="method method-post">POST</span>
+                <span class="endpoint-path">/admin/create-admin</span>
+                <p class="endpoint-description">Create a new admin user</p>
+            </div>
+
+            <div class="api-endpoint">
+                <span class="method method-post">POST</span>
+                <span class="endpoint-path">/admin/delete-user</span>
+                <p class="endpoint-description">Deactivate a user account</p>
+                <p class="method-note">Uses POST instead of DELETE because the request requires a body payload with
+                    adminWallet and targetWallet for authorization verification.</p>
+            </div>
+
+            <h2>System</h2>
+
+            <div class="api-endpoint">
+                <span class="method method-get">GET</span>
+                <span class="endpoint-path">/health</span>
+                <p class="endpoint-description">Health check endpoint</p>
+                <div class="code-block">
+                    // Response
+                    {
+                    "status": "ok",
+                    "timestamp": "2025-01-01T00:00:00Z"
+                    }
+                </div>
+            </div>
+
+            <div class="api-endpoint">
+                <span class="method method-get">GET</span>
+                <span class="endpoint-path">/notifications/{wallet}</span>
+                <p class="endpoint-description">Get user notifications by wallet address</p>
+            </div>
+
+            <h2>Supported File Formats</h2>
+            <div class="info-card">
+                <table>
+                    <tr>
+                        <th>Category</th>
+                        <th>Formats</th>
+                        <th>Max Size</th>
+                    </tr>
+                    <tr>
+                        <td>Images</td>
+                        <td>JPEG, PNG, GIF</td>
+                        <td>100MB</td>
+                    </tr>
+                    <tr>
+                        <td>Videos</td>
+                        <td>MP4, AVI, MOV</td>
+                        <td>100MB</td>
+                    </tr>
+                    <tr>
+                        <td>Audio</td>
+                        <td>MP3, WAV, M4A</td>
+                        <td>100MB</td>
+                    </tr>
+                    <tr>
+                        <td>Documents</td>
+                        <td>PDF, DOC, DOCX, TXT</td>
+                        <td>100MB</td>
+                    </tr>
+                    <tr>
+                        <td>Archives</td>
+                        <td>ZIP, RAR</td>
+                        <td>100MB</td>
+                    </tr>
+                </table>
+            </div>
+
+            <div class="doc-footer">
+                Need help? Contact us at <strong>DGC2MHNE@proton.me</strong>
+            </div>
+        </div>
+    </div>
+    <script src="footer.js"></script>
+</body>
+
+</html>
