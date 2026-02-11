@@ -157,7 +157,7 @@ async function handleEmailLogin(event) {
   try {
     showLoading(true, "Logging in...");
 
-    const response = await fetch(`${config.API_BASE_URL}/auth/email-login`, {
+    const response = await fetch(`${config.API_BASE_URL}/auth/email/login`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
