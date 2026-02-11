@@ -231,7 +231,7 @@ async function handleEmailRegistration(event) {
   try {
     showLoading(true, "Creating account...");
 
-    const response = await fetch(`${config.API_BASE_URL}/auth/email-register`, {
+    const response = await fetch(`${config.API_BASE_URL}/auth/email/register`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
