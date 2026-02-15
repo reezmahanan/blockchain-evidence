@@ -24,8 +24,8 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
     
-    <!-- Lucide Icons -->
-    <script src="https://unpkg.com/lucide@latest"></script>
+    <!-- Lucide Icons - Pinned to specific version with Subresource Integrity -->
+    <script src="https://unpkg.com/lucide@0.344.0" integrity="sha384-Kl3cQhNN0eOsiHm8vPcqgY72Lp6P/9GPQOJGfQnN/zTbtFTl4tYxQ+UqIsb0m0Y0" crossorigin="anonymous"></script>
 </head>
 
 <body>
@@ -53,28 +53,28 @@
                     <div class="stat-icon">
                         <i data-lucide="activity"></i>
                     </div>
-                    <div class="stat-number" id="pendingAnalysis">7</div>
+                    <div class="stat-number" id="pendingAnalysis">0</div>
                     <div class="stat-label">Pending Analysis</div>
                 </div>
                 <div class="stat-card-premium">
                     <div class="stat-icon">
                         <i data-lucide="check-circle"></i>
                     </div>
-                    <div class="stat-number" id="completedAnalysis">15</div>
+                    <div class="stat-number" id="completedAnalysis">0</div>
                     <div class="stat-label">Completed Today</div>
                 </div>
                 <div class="stat-card-premium">
                     <div class="stat-icon">
                         <i data-lucide="cpu"></i>
                     </div>
-                    <div class="stat-number" id="activeTools">4</div>
+                    <div class="stat-number" id="activeTools">0</div>
                     <div class="stat-label">Active Tools</div>
                 </div>
                 <div class="stat-card-premium">
                     <div class="stat-icon">
                         <i data-lucide="shield"></i>
                     </div>
-                    <div class="stat-number" id="verifiedItems">42</div>
+                    <div class="stat-number" id="verifiedItems">0</div>
                     <div class="stat-label">Verified Items</div>
                 </div>
             </div>
@@ -174,104 +174,7 @@
             </div>
             
             <div class="evidence-grid-premium" id="evidenceQueue">
-                <!-- High Priority Case -->
-                <div class="evidence-card-premium priority-high" data-priority="high" data-status="pending">
-                    <div class="evidence-header">
-                        <div>
-                            <h3 class="evidence-title">Digital Device Analysis</h3>
-                            <div class="evidence-meta">
-                                <span><i data-lucide="hash"></i> FOR-2024-001</span>
-                                <span><i data-lucide="smartphone"></i> iPhone 14</span>
-                            </div>
-                        </div>
-                        <span class="badge badge-error">PENDING</span>
-                    </div>
-                    <div style="margin-bottom: 16px;">
-                        <span class="priority-badge">
-                            <i data-lucide="alert-triangle" style="width: 12px; height: 12px; margin-right: 4px;"></i>
-                            HIGH PRIORITY
-                        </span>
-                    </div>
-                    <p style="color: var(--forensic-gray-600); font-size: 14px; margin-bottom: 16px;">
-                        <strong>Requested:</strong> March 15, 2024 • <strong>By:</strong> Det. Johnson
-                    </p>
-                    <div class="evidence-actions">
-                        <button class="btn btn-primary btn-sm" onclick="startAnalysis('FOR-2024-001')">
-                            <i data-lucide="play"></i>
-                            Start Analysis
-                        </button>
-                        <button class="btn btn-outline btn-sm" onclick="viewEvidenceDetails('FOR-2024-001')">
-                            <i data-lucide="info"></i>
-                            Details
-                        </button>
-                    </div>
-                </div>
-                
-                <!-- Medium Priority Case -->
-                <div class="evidence-card-premium priority-medium" data-priority="medium" data-status="processing">
-                    <div class="evidence-header">
-                        <div>
-                            <h3 class="evidence-title">DNA Sample Processing</h3>
-                            <div class="evidence-meta">
-                                <span><i data-lucide="hash"></i> FOR-2024-002</span>
-                                <span><i data-lucide="droplet"></i> Blood Sample #BS-001</span>
-                            </div>
-                        </div>
-                        <span class="badge badge-warning">PROCESSING</span>
-                    </div>
-                    <div style="margin-bottom: 16px;">
-                        <span class="priority-badge" style="background: #fffbeb; color: #92400e;">
-                            <i data-lucide="alert-circle" style="width: 12px; height: 12px; margin-right: 4px;"></i>
-                            MEDIUM PRIORITY
-                        </span>
-                    </div>
-                    <p style="color: var(--forensic-gray-600); font-size: 14px; margin-bottom: 16px;">
-                        <strong>Started:</strong> March 14, 2024 • <strong>Progress:</strong> 65%
-                    </p>
-                    <div class="evidence-actions">
-                        <button class="btn btn-warning btn-sm" onclick="continueAnalysis('FOR-2024-002')">
-                            <i data-lucide="refresh-cw"></i>
-                            Continue
-                        </button>
-                        <button class="btn btn-outline btn-sm" onclick="showProgressReport('FOR-2024-002')">
-                            <i data-lucide="bar-chart-2"></i>
-                            Progress
-                        </button>
-                    </div>
-                </div>
-                
-                <!-- Low Priority Case -->
-                <div class="evidence-card-premium priority-low" data-priority="low" data-status="complete">
-                    <div class="evidence-header">
-                        <div>
-                            <h3 class="evidence-title">Document Verification</h3>
-                            <div class="evidence-meta">
-                                <span><i data-lucide="hash"></i> FOR-2024-003</span>
-                                <span><i data-lucide="file"></i> Handwritten Note</span>
-                            </div>
-                        </div>
-                        <span class="badge badge-success">COMPLETE</span>
-                    </div>
-                    <div style="margin-bottom: 16px;">
-                        <span class="priority-badge" style="background: #ecfdf5; color: #065f46;">
-                            <i data-lucide="check-circle" style="width: 12px; height: 12px; margin-right: 4px;"></i>
-                            LOW PRIORITY
-                        </span>
-                    </div>
-                    <p style="color: var(--forensic-gray-600); font-size: 14px; margin-bottom: 16px;">
-                        <strong>Completed:</strong> March 13, 2024 • <strong>Report:</strong> FOR-2024-003-RPT
-                    </p>
-                    <div class="evidence-actions">
-                        <button class="btn btn-success btn-sm" onclick="viewAnalysisReport('FOR-2024-003')">
-                            <i data-lucide="file-text"></i>
-                            View Report
-                        </button>
-                        <button class="btn btn-outline btn-sm" onclick="archiveEvidence('FOR-2024-003')">
-                            <i data-lucide="archive"></i>
-                            Archive
-                        </button>
-                    </div>
-                </div>
+                <!-- Evidence cards will be dynamically inserted here -->
             </div>
         </div>
         
@@ -376,6 +279,31 @@
             initializeForensicDashboard();
         });
         
+        // Safe JSON parse helper function
+        function safeJsonParse(jsonString, defaultValue, isArray = false) {
+            if (!jsonString) return defaultValue;
+            
+            try {
+                const parsed = JSON.parse(jsonString);
+                
+                // Validate based on expected type
+                if (isArray && !Array.isArray(parsed)) {
+                    console.warn('Expected array but got:', typeof parsed);
+                    return defaultValue;
+                }
+                
+                if (!isArray && (typeof parsed !== 'object' || parsed === null)) {
+                    console.warn('Expected object but got:', typeof parsed);
+                    return defaultValue;
+                }
+                
+                return parsed;
+            } catch (e) {
+                console.error('JSON parse error:', e);
+                return defaultValue;
+            }
+        }
+        
         async function initializeForensicDashboard() {
             try {
                 // Check authentication
@@ -385,8 +313,16 @@
                     return;
                 }
                 
-                // Load user data
-                let userData = JSON.parse(localStorage.getItem('evidUser_' + userAccount) || '{}');
+                // Load user data with error handling
+                let userData = {};
+                try {
+                    const storedUser = localStorage.getItem('evidUser_' + userAccount);
+                    if (storedUser) {
+                        userData = safeJsonParse(storedUser, {}, false);
+                    }
+                } catch (e) {
+                    console.error('Error accessing user data:', e);
+                }
                 
                 if (!userData.role) {
                     const selectedRole = localStorage.getItem('selectedRole');
@@ -394,10 +330,15 @@
                         userData.role = selectedRole;
                         userData.fullName = localStorage.getItem('testUserName') || 'Forensic Analyst';
                         userData.walletAddress = userAccount;
-                        localStorage.setItem('evidUser_' + userAccount, JSON.stringify(userData));
+                        
+                        try {
+                            localStorage.setItem('evidUser_' + userAccount, JSON.stringify(userData));
+                        } catch (e) {
+                            console.error('Failed to save user data:', e);
+                        }
                     } else {
-                        alert('Session expired. Please login again.');
-                        logout();
+                        showNotification('Session expired. Please login again.', 'error');
+                        setTimeout(() => logout(), 2000);
                         return;
                     }
                 }
@@ -429,11 +370,27 @@
         }
         
         function loadForensicData() {
-            // Premium stats animation
-            animateValue('pendingAnalysis', 0, 7, 800);
-            animateValue('completedAnalysis', 0, 15, 800);
-            animateValue('activeTools', 0, 4, 800);
-            animateValue('verifiedItems', 0, 42, 800);
+            // Load real data from localStorage with error handling
+            let cases = [];
+            let evidence = [];
+            
+            try {
+                cases = safeJsonParse(localStorage.getItem('cases'), [], true);
+                evidence = safeJsonParse(localStorage.getItem('evidence'), [], true);
+            } catch (e) {
+                console.error('Error loading data from localStorage:', e);
+            }
+            
+            // Calculate actual counts from data
+            const pendingAnalysis = evidence.filter(e => e.status === 'pending' || e.status === 'Pending').length;
+            const completedAnalysis = evidence.filter(e => e.status === 'verified' || e.status === 'Verified').length;
+            const verifiedItems = evidence.filter(e => e.blockchainVerified || e.verified).length;
+            
+            // Animate stats with actual values
+            animateValue('pendingAnalysis', 0, pendingAnalysis, 800);
+            animateValue('completedAnalysis', 0, completedAnalysis, 800);
+            animateValue('activeTools', 0, 4, 800); // Static value for demo
+            animateValue('verifiedItems', 0, verifiedItems, 800);
         }
         
         function animateValue(elementId, start, end, duration) {
@@ -645,7 +602,6 @@
         // ===== EVIDENCE ACTIONS =====
         function startAnalysis(caseId) {
             showNotification(`🔬 Analysis initialized for case ${caseId}`, 'info');
-            // Add actual analysis logic here
         }
         
         function continueAnalysis(caseId) {
@@ -771,11 +727,14 @@
         
         // ===== UTILITY FUNCTIONS =====
         function showNotification(message, type = 'info') {
+            // Escape message to prevent XSS
+            const escapedMessage = escapeHtml ? escapeHtml(message) : message;
+            
             const notification = document.createElement('div');
             notification.className = `toast toast-${type}`;
             notification.innerHTML = `
                 <div class="toast-content">
-                    <span>${message}</span>
+                    <span>${escapedMessage}</span>
                     <button onclick="this.parentElement.parentElement.remove()" class="toast-close">
                         <i data-lucide="x"></i>
                     </button>
@@ -846,9 +805,26 @@
             closeModal();
         }
         
+        // HTML escaping function (if not defined elsewhere)
+        if (typeof escapeHtml !== 'function') {
+            function escapeHtml(value) {
+                if (value === undefined || value === null) return '';
+                return String(value)
+                    .replace(/&/g, '&amp;')
+                    .replace(/</g, '&lt;')
+                    .replace(/>/g, '&gt;')
+                    .replace(/"/g, '&quot;')
+                    .replace(/'/g, '&#039;');
+            }
+        }
+        
         function logout() {
             if (confirm('Are you sure you want to logout?')) {
-                localStorage.clear();
+                try {
+                    localStorage.clear();
+                } catch (e) {
+                    console.error('Error clearing localStorage:', e);
+                }
                 window.location.href = 'index.html';
             }
         }

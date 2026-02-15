@@ -5,23 +5,29 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     
+    <!-- Premium SEO & Meta -->
     <title>EVID-DGC · Admin Command Center</title>
     <meta name="description" content="Secure blockchain evidence management system - Enterprise dashboard">
     <meta name="theme-color" content="#d32f2f">
     
+    <!-- Critical CSS First -->
     <link rel="stylesheet" href="styles.css">
     <link rel="stylesheet" href="responsive-improvements.css">
     
+    <!-- Favicon Suite -->
     <link rel="icon" type="image/png" sizes="32x32" href="favicon.png">
     <link rel="icon" type="image/png" sizes="16x16" href="favicon.png">
     <link rel="apple-touch-icon" href="favicon.png">
     
+    <!-- Premium Font Loading -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
     
+    <!-- Lucide Icons - Pinned to specific version with Subresource Integrity -->
     <script src="https://unpkg.com/lucide@0.344.0" integrity="sha384-Kl3cQhNN0eOsiHm8vPcqgY72Lp6P/9GPQOJGfQnN/zTbtFTl4tYxQ+UqIsb0m0Y0" crossorigin="anonymous"></script>
     
+    <!-- Google Analytics - Premium Tracking -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-KEYDE0ZH4Z"></script>
     <script>
         window.dataLayer = window.dataLayer || [];
@@ -36,6 +42,9 @@
 </head>
 
 <body>
+    <!-- ===== PREMIUM DASHBOARD ROUTER ===== -->
+    
+    <!-- Loading State - Premium Experience -->
     <div id="loadingState" class="dashboard-loader">
         <div class="loader-card">
             <div class="loader-icon">
@@ -50,6 +59,7 @@
         </div>
     </div>
     
+    <!-- Error State - Premium Design -->
     <div id="errorState" class="error-state-premium hidden">
         <div class="error-card">
             <div class="error-icon-wrapper">
@@ -175,34 +185,62 @@
                 let userAccount = currentUserRaw;
                 let userData = null;
                 
-                // Parse user info if stored as JSON
+                // Parse user data if JSON format - WITH ERROR HANDLING
                 if (currentUserRaw.startsWith('{')) {
                     try {
                         const parsed = JSON.parse(currentUserRaw);
-                        userData = parsed.user;
-                        userAccount = parsed.type === 'email'
-                            ? userData.email
-                            : userData.walletAddress || userData.address;
+                        // Validate parsed data structure
+                        if (parsed && typeof parsed === 'object') {
+                            userData = parsed.user;
+                            if (parsed.type === 'email') {
+                                userAccount = userData?.email || userAccount;
+                            } else {
+                                userAccount = userData?.walletAddress || userData?.address || userAccount;
+                            }
+                        }
                     } catch (e) {
-                        console.debug('Error parsing user data:', e);
+                        console.error('Failed to parse user data JSON:', e);
+                        // If parsing fails, treat as corrupted and clear it
+                        localStorage.removeItem('currentUser');
+                        showError('User data corrupted. Please login again.');
+                        return;
                     }
                 }
                 
                 // Step 4: Retrieving role
-                updateProgress('Loading user profile...', 60);
+                updateProgress('Configuring workspace...', 60);
                 await sleep(300);
                 
-                // Load user profile if needed (with cache)
+                // Get user data if not already parsed (with cache and error handling)
                 if (!userData) {
                     userData = await getUserInfo(userAccount);
                 }
                 
-                // Resolve role
-                let finalRole = localStorage.getItem('selectedRole')
-                    || userData?.role
-                    || 'public_viewer';
+                // Get selected role with safe fallback
+                let finalRole = null;
+                try {
+                    finalRole = localStorage.getItem('selectedRole');
+                } catch (e) {
+                    console.error('Failed to read selectedRole:', e);
+                }
                 
-                localStorage.setItem('selectedRole', finalRole);
+                if (!finalRole && userData && userData.role) {
+                    finalRole = userData.role;
+                    try {
+                        localStorage.setItem('selectedRole', finalRole);
+                    } catch (e) {
+                        console.error('Failed to save selectedRole:', e);
+                    }
+                }
+                
+                if (!finalRole) {
+                    finalRole = 'public_viewer';
+                    try {
+                        localStorage.setItem('selectedRole', finalRole);
+                    } catch (e) {
+                        console.error('Failed to save default role:', e);
+                    }
+                }
                 
                 // Step 5: Preparing dashboard
                 updateProgress('Loading dashboard components...', 75);
@@ -260,16 +298,30 @@
                 return userCache.get(userAccount);
             }
             
-            // Try to get from localStorage
-            const savedUser = localStorage.getItem('evidUser_' + userAccount);
-            if (!savedUser) return null;
-            
+            // Try to get from localStorage with error handling
             try {
-                const parsed = JSON.parse(savedUser);
-                userCache.set(userAccount, parsed); // Cache for future use
-                return parsed;
+                const savedUser = localStorage.getItem('evidUser_' + userAccount);
+                if (!savedUser) return null;
+                
+                try {
+                    const parsed = JSON.parse(savedUser);
+                    // Validate parsed data
+                    if (parsed && typeof parsed === 'object') {
+                        userCache.set(userAccount, parsed); // Cache for future use
+                        return parsed;
+                    } else {
+                        console.warn('Invalid user data format, clearing');
+                        localStorage.removeItem('evidUser_' + userAccount);
+                        return null;
+                    }
+                } catch (e) {
+                    console.error('Error parsing user data:', e);
+                    // Clear corrupted data
+                    localStorage.removeItem('evidUser_' + userAccount);
+                    return null;
+                }
             } catch (e) {
-                console.error('Error parsing user data:', e);
+                console.error('Error accessing localStorage:', e);
                 return null;
             }
         }
@@ -328,8 +380,12 @@
         
         function goToLogin() {
             // Clear sensitive data
-            localStorage.removeItem('currentUser');
-            localStorage.removeItem('selectedRole');
+            try {
+                localStorage.removeItem('currentUser');
+                localStorage.removeItem('selectedRole');
+            } catch (e) {
+                console.error('Error clearing localStorage:', e);
+            }
             
             // Redirect to login
             window.location.href = 'index.html';

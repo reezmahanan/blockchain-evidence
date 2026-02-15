@@ -24,7 +24,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
     
-    <!-- Lucide Icons - Pinned to specific version with Subresource Integrity for security -->
+    <!-- Lucide Icons - Pinned to specific version with Subresource Integrity -->
     <script src="https://unpkg.com/lucide@0.344.0" integrity="sha384-Kl3cQhNN0eOsiHm8vPcqgY72Lp6P/9GPQOJGfQnN/zTbtFTl4tYxQ+UqIsb0m0Y0" crossorigin="anonymous"></script>
     
 </head>
@@ -297,8 +297,14 @@
                     return;
                 }
                 
-                // Load user data
-                let userData = JSON.parse(localStorage.getItem('evidUser_' + userAccount) || '{}');
+                // Load user data with error handling
+                let userData = null;
+                try {
+                    userData = JSON.parse(localStorage.getItem('evidUser_' + userAccount) || '{}');
+                } catch (e) {
+                    console.error('Failed to parse user data:', e);
+                    userData = {};
+                }
                 
                 if (!userData.role) {
                     const selectedRole = localStorage.getItem('selectedRole');
@@ -306,7 +312,11 @@
                         userData.role = selectedRole;
                         userData.fullName = localStorage.getItem('testUserName') || 'Investigator';
                         userData.walletAddress = userAccount;
-                        localStorage.setItem('evidUser_' + userAccount, JSON.stringify(userData));
+                        try {
+                            localStorage.setItem('evidUser_' + userAccount, JSON.stringify(userData));
+                        } catch (e) {
+                            console.error('Failed to save user data:', e);
+                        }
                     } else {
                         showToast('Session expired. Please login again.', 'error');
                         setTimeout(() => logout(), 2000);
@@ -367,14 +377,13 @@
                     if (!Array.isArray(cases)) {
                         console.warn('Stored cases is not an array, resetting to empty array');
                         cases = [];
-                        // Optionally clear corrupted data
                         localStorage.removeItem('cases');
                     }
                 }
             } catch (e) {
                 console.error('Failed to parse stored cases:', e);
                 cases = [];
-                localStorage.removeItem('cases'); // Clear corrupted data
+                localStorage.removeItem('cases');
             }
             
             // Safely load evidence from localStorage with error handling
@@ -392,7 +401,7 @@
             } catch (e) {
                 console.error('Failed to parse stored evidence:', e);
                 evidence = [];
-                localStorage.removeItem('evidence'); // Clear corrupted data
+                localStorage.removeItem('evidence');
             }
             
             // Calculate actual counts from data using case-insensitive comparison
@@ -413,23 +422,17 @@
                 return status === 'verified';
             }).length;
             
-            // Use fallback demo values only when localStorage is empty
-            const finalActiveCases = cases.length > 0 ? activeCasesCount : 5;
-            const finalEvidenceItems = evidence.length > 0 ? evidenceItemsCount : 23;
-            const finalPendingReviews = evidence.length > 0 ? pendingReviewsCount : 3;
-            const finalVerifiedItems = evidence.length > 0 ? verifiedItemsCount : 42;
-            
-            // Animate stats with actual or fallback values
-            animateValue('activeCases', 0, finalActiveCases, 800);
-            animateValue('evidenceItems', 0, finalEvidenceItems, 800);
-            animateValue('pendingReviews', 0, finalPendingReviews, 800);
-            animateValue('verifiedItems', 0, finalVerifiedItems, 800);
+            // Animate stats with actual values (no fallbacks to allow zero counts)
+            animateValue('activeCases', 0, activeCasesCount, 800);
+            animateValue('evidenceItems', 0, evidenceItemsCount, 800);
+            animateValue('pendingReviews', 0, pendingReviewsCount, 800);
+            animateValue('verifiedItems', 0, verifiedItemsCount, 800);
             
             // Update cases grid with real data if available
             if (cases.length > 0) {
                 updateCasesGrid(cases.slice(0, 3));
             } else {
-                // Show empty state or default message when no cases
+                // Show empty state when no cases
                 const casesGrid = document.getElementById('casesGrid');
                 if (casesGrid) {
                     casesGrid.innerHTML = `
@@ -582,7 +585,7 @@
             const newCase = {
                 id: caseId,
                 title: title,
-                status: 'OPEN', // Keep uppercase for display consistency
+                status: 'OPEN',
                 location: document.getElementById('newCaseLocation')?.value || 'Not specified',
                 description: document.getElementById('newCaseDescription')?.value || '',
                 date: new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }),
@@ -591,10 +594,16 @@
                 createdAt: new Date().toISOString()
             };
             
-            // Save to localStorage
-            const cases = JSON.parse(localStorage.getItem('cases') || '[]');
-            cases.unshift(newCase);
-            localStorage.setItem('cases', JSON.stringify(cases));
+            // Save to localStorage with error handling
+            try {
+                const cases = JSON.parse(localStorage.getItem('cases') || '[]');
+                cases.unshift(newCase);
+                localStorage.setItem('cases', JSON.stringify(cases));
+            } catch (e) {
+                console.error('Failed to save case:', e);
+                showToast('Failed to save case', 'error');
+                return;
+            }
             
             closeModal();
             showToast(`✅ Case ${caseId} created successfully`, 'success');
@@ -678,14 +687,20 @@
                 description: document.getElementById('evidenceDescription')?.value || '',
                 uploadedBy: currentUser?.fullName || 'Investigator',
                 uploadedAt: new Date().toISOString(),
-                status: 'Verified', // Keep capitalized for display consistency
+                status: 'Verified',
                 hash: 'sha256:' + Math.random().toString(36).substring(2, 15)
             };
             
-            // Save to localStorage
-            const evidenceList = JSON.parse(localStorage.getItem('evidence') || '[]');
-            evidenceList.unshift(evidence);
-            localStorage.setItem('evidence', JSON.stringify(evidenceList));
+            // Save to localStorage with error handling
+            try {
+                const evidenceList = JSON.parse(localStorage.getItem('evidence') || '[]');
+                evidenceList.unshift(evidence);
+                localStorage.setItem('evidence', JSON.stringify(evidenceList));
+            } catch (e) {
+                console.error('Failed to save evidence:', e);
+                showToast('Failed to save evidence', 'error');
+                return;
+            }
             
             closeModal();
             showToast(`✅ Evidence uploaded and verified on blockchain`, 'success');
@@ -693,32 +708,26 @@
         }
         
         function viewCaseDetails(caseId) {
-            const cases = JSON.parse(localStorage.getItem('cases') || '[]');
+            // Safely parse cases with error handling
+            let cases = [];
+            try {
+                cases = JSON.parse(localStorage.getItem('cases') || '[]');
+            } catch (e) {
+                console.error('Failed to parse cases:', e);
+                cases = [];
+            }
+            
             let caseData = cases.find(c => c.id === caseId);
             
             if (!caseData) {
-                // Mock data for demo
-                caseData = {
-                    id: caseId,
-                    title: caseId.includes('001') ? 'Burglary Investigation' : 
-                           caseId.includes('002') ? 'Fraud Investigation' : 'Theft Investigation',
-                    status: caseId.includes('001') ? 'OPEN' : caseId.includes('002') ? 'ANALYZING' : 'CLOSED',
-                    location: caseId.includes('001') ? 'Downtown Office Building' :
-                             caseId.includes('002') ? 'Financial District' : 'Retail Store',
-                    date: caseId.includes('001') ? 'March 15, 2024' :
-                          caseId.includes('002') ? 'March 12, 2024' : 'March 10, 2024',
-                    description: 'Full investigation details with blockchain-verified evidence chain.',
-                    officer: caseId.includes('001') ? 'Det. Johnson' :
-                            caseId.includes('002') ? 'Det. Smith' : 'Det. Davis',
-                    priority: caseId.includes('001') ? 'High' : caseId.includes('002') ? 'Medium' : 'Low'
-                };
+                showToast('Case not found', 'error');
+                return;
             }
             
             // Escape all user-provided content with safe status handling
             const escapedTitle = escapeHtml(caseData.title);
             const escapedId = escapeHtml(caseData.id);
             const escapedStatus = escapeHtml(caseData.status);
-            // Use normalizeStatus for safe lowercase conversion
             const escapedStatusLower = escapeHtml(normalizeStatus(caseData.status));
             const escapedLocation = escapeHtml(caseData.location);
             const escapedDate = escapeHtml(caseData.date);
@@ -787,33 +796,14 @@
             showModal('Case Details', modalContent);
         }
         
-        // Helper function to set evidence case ID after modal is rendered
-        function setEvidenceCaseIdAfterRender(caseId) {
-            // Use requestAnimationFrame to wait for the next paint cycle
-            requestAnimationFrame(() => {
-                // Then use setTimeout to ensure DOM is fully updated
-                setTimeout(() => {
-                    const caseIdInput = document.getElementById('evidenceCaseId');
-                    if (caseIdInput) {
-                        caseIdInput.value = caseId;
-                    } else {
-                        // If input not found, try one more time after a short delay
-                        setTimeout(() => {
-                            const retryInput = document.getElementById('evidenceCaseId');
-                            if (retryInput) {
-                                retryInput.value = caseId;
-                            }
-                        }, 50);
-                    }
-                }, 0);
-            });
-        }
-        
         function addEvidence(caseId) {
             closeModal();
             uploadEvidence();
-            // Use deterministic post-render mechanism instead of fragile setTimeout
-            setEvidenceCaseIdAfterRender(caseId);
+            // Pre-fill the case ID with a more reliable method
+            setTimeout(() => {
+                const caseIdInput = document.getElementById('evidenceCaseId');
+                if (caseIdInput) caseIdInput.value = caseId;
+            }, 100);
         }
         
         function requestAnalysis(caseId) {
@@ -943,8 +933,8 @@
         function refreshDashboard() {
             showToast('🔄 Syncing investigation data...', 'info');
             setTimeout(() => {
-                showToast('✅ Dashboard synchronized', 'success');
                 loadInvestigationData();
+                showToast('✅ Dashboard synchronized', 'success');
             }, 1500);
         }
         
@@ -957,7 +947,7 @@
                 chip.classList.remove('active');
             });
             
-            // Add active class to clicked button
+            // Add active class to clicked button (event is explicitly passed)
             if (event && event.currentTarget) {
                 event.currentTarget.classList.add('active');
             }

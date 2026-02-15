@@ -24,8 +24,8 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
     
-    <!-- Lucide Icons - Pinned to specific version for security -->
-    <script src="https://unpkg.com/lucide@0.344.0"></script>
+    <!-- Lucide Icons - Pinned to specific version with Subresource Integrity -->
+    <script src="https://unpkg.com/lucide@0.344.0" integrity="sha384-Kl3cQhNN0eOsiHm8vPcqgY72Lp6P/9GPQOJGfQnN/zTbtFTl4tYxQ+UqIsb0m0Y0" crossorigin="anonymous"></script>
     
     <!-- Web3.js for Blockchain Integration -->
     <script src="https://cdn.jsdelivr.net/npm/web3@1.8.0/dist/web3.min.js"></script>
@@ -316,6 +316,31 @@
                 .replace(/'/g, '&#039;');
         }
         
+        // Safe JSON parse helper function
+        function safeJsonParse(jsonString, defaultValue, isArray = false) {
+            if (!jsonString) return defaultValue;
+            
+            try {
+                const parsed = JSON.parse(jsonString);
+                
+                // Validate based on expected type
+                if (isArray && !Array.isArray(parsed)) {
+                    console.warn('Expected array but got:', typeof parsed);
+                    return defaultValue;
+                }
+                
+                if (!isArray && (typeof parsed !== 'object' || parsed === null)) {
+                    console.warn('Expected object but got:', typeof parsed);
+                    return defaultValue;
+                }
+                
+                return parsed;
+            } catch (e) {
+                console.error('JSON parse error:', e);
+                return defaultValue;
+            }
+        }
+        
         async function initializeEvidenceVault() {
             try {
                 // Check authentication
@@ -325,8 +350,16 @@
                     return;
                 }
                 
-                // Load user data
-                let userData = JSON.parse(localStorage.getItem('evidUser_' + userAccount) || '{}');
+                // Load user data with error handling
+                let userData = {};
+                try {
+                    const storedUser = localStorage.getItem('evidUser_' + userAccount);
+                    if (storedUser) {
+                        userData = safeJsonParse(storedUser, {}, false);
+                    }
+                } catch (e) {
+                    console.error('Error accessing user data:', e);
+                }
                 
                 if (!userData.role) {
                     const selectedRole = localStorage.getItem('selectedRole');
@@ -334,7 +367,12 @@
                         userData.role = selectedRole;
                         userData.fullName = localStorage.getItem('testUserName') || 'Evidence Manager';
                         userData.walletAddress = userAccount;
-                        localStorage.setItem('evidUser_' + userAccount, JSON.stringify(userData));
+                        
+                        try {
+                            localStorage.setItem('evidUser_' + userAccount, JSON.stringify(userData));
+                        } catch (e) {
+                            console.error('Failed to save user data:', e);
+                        }
                     }
                 }
                 
@@ -478,19 +516,45 @@
                     hash: fileHash.substring(0, 16) + '...'
                 };
                 
-                // Save to localStorage
+                // Save to localStorage with error handling
                 const evidenceKey = 'evidence_' + (currentUser?.walletAddress || 'default');
-                const existingEvidence = JSON.parse(localStorage.getItem(evidenceKey) || '[]');
+                
+                // Safely load existing evidence
+                let existingEvidence = [];
+                try {
+                    const stored = localStorage.getItem(evidenceKey);
+                    if (stored) {
+                        existingEvidence = safeJsonParse(stored, [], true);
+                    }
+                } catch (e) {
+                    console.error('Error reading evidence from localStorage:', e);
+                }
+                
                 existingEvidence.unshift(evidenceData);
-                localStorage.setItem(evidenceKey, JSON.stringify(existingEvidence));
                 
-                // Also save to global evidence list
-                const globalEvidence = JSON.parse(localStorage.getItem('evidence') || '[]');
-                globalEvidence.unshift(evidenceData);
-                localStorage.setItem('evidence', JSON.stringify(globalEvidence));
+                try {
+                    localStorage.setItem(evidenceKey, JSON.stringify(existingEvidence));
+                } catch (e) {
+                    console.error('Failed to save evidence to localStorage:', e);
+                    showNotification('Failed to save evidence', 'error');
+                    return;
+                }
                 
-                // Add to case evidence count
-                updateCaseEvidenceCount(caseId);
+                // Also save to global evidence list with error handling
+                try {
+                    const globalEvidence = safeJsonParse(localStorage.getItem('evidence'), [], true);
+                    globalEvidence.unshift(evidenceData);
+                    localStorage.setItem('evidence', JSON.stringify(globalEvidence));
+                } catch (e) {
+                    console.error('Error saving to global evidence:', e);
+                }
+                
+                // Add to case evidence count with error handling
+                try {
+                    updateCaseEvidenceCount(caseId);
+                } catch (e) {
+                    console.error('Failed to update case evidence count:', e);
+                }
                 
                 // Reset form
                 resetForm();
@@ -571,70 +635,83 @@
         }
         
         function updateCaseEvidenceCount(caseId) {
-            const cases = JSON.parse(localStorage.getItem('cases') || '[]');
-            const caseIndex = cases.findIndex(c => c.id === caseId);
-            
-            if (caseIndex !== -1) {
-                cases[caseIndex].evidenceCount = (cases[caseIndex].evidenceCount || 0) + 1;
-                localStorage.setItem('cases', JSON.stringify(cases));
+            try {
+                const cases = safeJsonParse(localStorage.getItem('cases'), [], true);
+                const caseIndex = cases.findIndex(c => c.id === caseId);
+                
+                if (caseIndex !== -1) {
+                    cases[caseIndex].evidenceCount = (cases[caseIndex].evidenceCount || 0) + 1;
+                    localStorage.setItem('cases', JSON.stringify(cases));
+                }
+            } catch (e) {
+                console.error('Failed to update case evidence count:', e);
             }
         }
         
         function loadEvidence() {
             const evidenceKey = 'evidence_' + (currentUser?.walletAddress || 'default');
-            const stored = localStorage.getItem(evidenceKey);
             
-            if (stored) {
-                evidenceList = JSON.parse(stored);
-            } else {
-                // Load mock data for demonstration
-                evidenceList = [
-                    {
-                        id: 'EVD-20240315-001',
-                        caseId: 'INV-2024-001',
-                        fileName: 'security_footage.mp4',
-                        type: 'video',
-                        fileSize: 15728640,
-                        uploadedBy: 'Det. Johnson',
-                        uploadedAt: '2024-03-15T10:30:00Z',
-                        status: 'verified',
-                        verified: true,
-                        hash: '7d3a...f9b2',
-                        blockchainTx: '0x7d3a...f9b2',
-                        description: 'Security camera footage from downtown office building'
-                    },
-                    {
-                        id: 'EVD-20240314-002',
-                        caseId: 'INV-2024-001',
-                        fileName: 'fingerprint_lift_001.jpg',
-                        type: 'image',
-                        fileSize: 2457600,
-                        uploadedBy: 'Det. Johnson',
-                        uploadedAt: '2024-03-14T14:20:00Z',
-                        status: 'verified',
-                        verified: true,
-                        hash: '8e4c...a1d3',
-                        blockchainTx: '0x8e4c...a1d3',
-                        description: 'Latent fingerprint lifted from door handle'
-                    },
-                    {
-                        id: 'EVD-20240313-003',
-                        caseId: 'INV-2024-002',
-                        fileName: 'financial_records.pdf',
-                        type: 'document',
-                        fileSize: 3145728,
-                        uploadedBy: 'Det. Smith',
-                        uploadedAt: '2024-03-13T09:15:00Z',
-                        status: 'verified',
-                        verified: true,
-                        hash: '2b5f...c7e8',
-                        blockchainTx: '0x2b5f...c7e8',
-                        description: 'Suspicious transaction records'
-                    }
-                ];
+            try {
+                const stored = localStorage.getItem(evidenceKey);
+                if (stored) {
+                    evidenceList = safeJsonParse(stored, [], true);
+                } else {
+                    // Load mock data for demonstration
+                    evidenceList = getMockEvidenceData();
+                }
+            } catch (e) {
+                console.error('Error loading evidence:', e);
+                evidenceList = getMockEvidenceData();
             }
             
             renderEvidenceGrid(evidenceList);
+        }
+        
+        function getMockEvidenceData() {
+            return [
+                {
+                    id: 'EVD-20240315-001',
+                    caseId: 'INV-2024-001',
+                    fileName: 'security_footage.mp4',
+                    type: 'video',
+                    fileSize: 15728640,
+                    uploadedBy: 'Det. Johnson',
+                    uploadedAt: '2024-03-15T10:30:00Z',
+                    status: 'verified',
+                    verified: true,
+                    hash: '7d3a...f9b2',
+                    blockchainTx: '0x7d3a...f9b2',
+                    description: 'Security camera footage from downtown office building'
+                },
+                {
+                    id: 'EVD-20240314-002',
+                    caseId: 'INV-2024-001',
+                    fileName: 'fingerprint_lift_001.jpg',
+                    type: 'image',
+                    fileSize: 2457600,
+                    uploadedBy: 'Det. Johnson',
+                    uploadedAt: '2024-03-14T14:20:00Z',
+                    status: 'verified',
+                    verified: true,
+                    hash: '8e4c...a1d3',
+                    blockchainTx: '0x8e4c...a1d3',
+                    description: 'Latent fingerprint lifted from door handle'
+                },
+                {
+                    id: 'EVD-20240313-003',
+                    caseId: 'INV-2024-002',
+                    fileName: 'financial_records.pdf',
+                    type: 'document',
+                    fileSize: 3145728,
+                    uploadedBy: 'Det. Smith',
+                    uploadedAt: '2024-03-13T09:15:00Z',
+                    status: 'verified',
+                    verified: true,
+                    hash: '2b5f...c7e8',
+                    blockchainTx: '0x2b5f...c7e8',
+                    description: 'Suspicious transaction records'
+                }
+            ];
         }
         
         function renderEvidenceGrid(evidence) {

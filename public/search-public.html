@@ -24,7 +24,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
     
-    <!-- Lucide Icons - Pinned to specific version with Subresource Integrity for security -->
+    <!-- Lucide Icons - Pinned to specific version with Subresource Integrity -->
     <script src="https://unpkg.com/lucide@0.344.0" integrity="sha384-Kl3cQhNN0eOsiHm8vPcqgY72Lp6P/9GPQOJGfQnN/zTbtFTl4tYxQ+UqIsb0m0Y0" crossorigin="anonymous"></script>
 </head>
 
@@ -549,7 +549,7 @@
                 currentResults = results;
                 currentPage = 1;
                 
-                // Apply filters (this will also render the results)
+                // Apply filters (this will also render the results - NO double render)
                 applyFilters();
                 
                 // Track search
@@ -682,7 +682,6 @@
                 const escapedLocation = escapeHtml(record.location || '');
                 
                 // Use HTML-escaped ID for the data attribute to prevent attribute injection
-                // dataset.recordId will return the decoded value automatically
                 const dataId = escapeHtml(record.id || '');
                 
                 // Handle tags
@@ -1068,7 +1067,6 @@
             lucide.createIcons();
             
             // Use raw record.id for notification (showNotification will escape it)
-            // This prevents double-escaping
             showNotification(`📋 Viewing ${record.type}: ${record.id}`, 'info');
         }
         
