@@ -21,8 +21,8 @@ const allowedRoles = [
     'legal_professional',
     'court_official',
     'evidence_manager',
-    'auditor',
-    'admin'
+    'auditor'
+    // 'admin' intentionally excluded from public registration
 ];
 
 // Store connected users for real-time notifications

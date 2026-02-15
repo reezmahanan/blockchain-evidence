@@ -119,12 +119,17 @@ const emailRegister = async (req, res) => {
         
         console.log('Email registration request:', { email, fullName, role, department, jurisdiction });
 
+
         if (!email || !password || !fullName || !role) {
             return res.status(400).json({ error: 'Email, password, full name, and role are required' });
         }
 
         if (password.length < 6) {
             return res.status(400).json({ error: 'Password must be at least 6 characters long' });
+        }
+
+        if (role === 'admin') {
+            return res.status(403).json({ error: 'Administrator registration is not allowed via public registration.' });
         }
 
         if (!allowedRoles.includes(role)) {
@@ -221,8 +226,13 @@ const walletRegister = async (req, res) => {
             return res.status(400).json({ error: 'Invalid wallet address' });
         }
 
+
         if (!fullName || !role) {
             return res.status(400).json({ error: 'Full name and role are required' });
+        }
+
+        if (role === 'admin') {
+            return res.status(403).json({ error: 'Administrator registration is not allowed via public registration.' });
         }
 
         if (!allowedRoles.includes(role)) {
