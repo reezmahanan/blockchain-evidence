@@ -24,8 +24,8 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
     
-    <!-- Lucide Icons - Pinned to specific version for security -->
-    <script src="https://unpkg.com/lucide@0.344.0"></script>
+    <!-- Lucide Icons - Pinned to specific version with Subresource Integrity for security -->
+    <script src="https://unpkg.com/lucide@0.344.0" integrity="sha384-Kl3cQhNN0eOsiHm8vPcqgY72Lp6P/9GPQOJGfQnN/zTbtFTl4tYxQ+UqIsb0m0Y0" crossorigin="anonymous"></script>
     
 </head>
 
@@ -358,9 +358,42 @@
         }
         
         function loadInvestigationData() {
-            // Load real data from localStorage
-            const cases = JSON.parse(localStorage.getItem('cases') || '[]');
-            const evidence = JSON.parse(localStorage.getItem('evidence') || '[]');
+            // Safely load cases from localStorage with error handling
+            let cases = [];
+            try {
+                const casesData = localStorage.getItem('cases');
+                if (casesData) {
+                    cases = JSON.parse(casesData);
+                    if (!Array.isArray(cases)) {
+                        console.warn('Stored cases is not an array, resetting to empty array');
+                        cases = [];
+                        // Optionally clear corrupted data
+                        localStorage.removeItem('cases');
+                    }
+                }
+            } catch (e) {
+                console.error('Failed to parse stored cases:', e);
+                cases = [];
+                localStorage.removeItem('cases'); // Clear corrupted data
+            }
+            
+            // Safely load evidence from localStorage with error handling
+            let evidence = [];
+            try {
+                const evidenceData = localStorage.getItem('evidence');
+                if (evidenceData) {
+                    evidence = JSON.parse(evidenceData);
+                    if (!Array.isArray(evidence)) {
+                        console.warn('Stored evidence is not an array, resetting to empty array');
+                        evidence = [];
+                        localStorage.removeItem('evidence');
+                    }
+                }
+            } catch (e) {
+                console.error('Failed to parse stored evidence:', e);
+                evidence = [];
+                localStorage.removeItem('evidence'); // Clear corrupted data
+            }
             
             // Calculate actual counts from data using case-insensitive comparison
             const activeCasesCount = cases.filter(c => {
@@ -435,11 +468,12 @@
             
             // Build HTML with escaped values
             casesGrid.innerHTML = cases.map(c => {
-                // Escape all user-provided content
+                // Escape all user-provided content with safe status handling
                 const escapedTitle = escapeHtml(c.title);
                 const escapedId = escapeHtml(c.id);
                 const escapedStatus = escapeHtml(c.status);
-                const escapedStatusLower = escapeHtml(c.status.toLowerCase());
+                // Use normalizeStatus for safe lowercase conversion
+                const escapedStatusLower = escapeHtml(normalizeStatus(c.status));
                 const escapedLocation = escapeHtml(c.location || 'Location TBD');
                 const escapedDate = escapeHtml(c.date || 'Date TBD');
                 const escapedOfficer = escapeHtml(c.officer || 'Unassigned');
@@ -680,11 +714,12 @@
                 };
             }
             
-            // Escape all user-provided content
+            // Escape all user-provided content with safe status handling
             const escapedTitle = escapeHtml(caseData.title);
             const escapedId = escapeHtml(caseData.id);
             const escapedStatus = escapeHtml(caseData.status);
-            const escapedStatusLower = escapeHtml(caseData.status.toLowerCase());
+            // Use normalizeStatus for safe lowercase conversion
+            const escapedStatusLower = escapeHtml(normalizeStatus(caseData.status));
             const escapedLocation = escapeHtml(caseData.location);
             const escapedDate = escapeHtml(caseData.date);
             const escapedOfficer = escapeHtml(caseData.officer);
@@ -752,14 +787,33 @@
             showModal('Case Details', modalContent);
         }
         
+        // Helper function to set evidence case ID after modal is rendered
+        function setEvidenceCaseIdAfterRender(caseId) {
+            // Use requestAnimationFrame to wait for the next paint cycle
+            requestAnimationFrame(() => {
+                // Then use setTimeout to ensure DOM is fully updated
+                setTimeout(() => {
+                    const caseIdInput = document.getElementById('evidenceCaseId');
+                    if (caseIdInput) {
+                        caseIdInput.value = caseId;
+                    } else {
+                        // If input not found, try one more time after a short delay
+                        setTimeout(() => {
+                            const retryInput = document.getElementById('evidenceCaseId');
+                            if (retryInput) {
+                                retryInput.value = caseId;
+                            }
+                        }, 50);
+                    }
+                }, 0);
+            });
+        }
+        
         function addEvidence(caseId) {
             closeModal();
             uploadEvidence();
-            // Pre-fill the case ID
-            setTimeout(() => {
-                const caseIdInput = document.getElementById('evidenceCaseId');
-                if (caseIdInput) caseIdInput.value = caseId;
-            }, 100);
+            // Use deterministic post-render mechanism instead of fragile setTimeout
+            setEvidenceCaseIdAfterRender(caseId);
         }
         
         function requestAnalysis(caseId) {

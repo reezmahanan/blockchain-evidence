@@ -24,8 +24,8 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
     
-    <!-- Lucide Icons - Pinned to specific version for security -->
-    <script src="https://unpkg.com/lucide@0.344.0"></script>
+    <!-- Lucide Icons - Pinned to specific version with Subresource Integrity for security -->
+    <script src="https://unpkg.com/lucide@0.344.0" integrity="sha384-Kl3cQhNN0eOsiHm8vPcqgY72Lp6P/9GPQOJGfQnN/zTbtFTl4tYxQ+UqIsb0m0Y0" crossorigin="anonymous"></script>
 </head>
 
 <body>
@@ -681,9 +681,9 @@
                 const escapedInvestigator = escapeHtml(record.investigator || '');
                 const escapedLocation = escapeHtml(record.location || '');
                 
-                // For data attribute, we need to encode the ID safely (not escaped for HTML)
-                // We'll use the raw ID for the data attribute since it will be read via dataset
-                const rawId = record.id || '';
+                // Use HTML-escaped ID for the data attribute to prevent attribute injection
+                // dataset.recordId will return the decoded value automatically
+                const dataId = escapeHtml(record.id || '');
                 
                 // Handle tags
                 const tagsHtml = record.tags ? record.tags.slice(0, 2).map(tag => 
@@ -698,7 +698,7 @@
                 const idPrefix = record.type === 'case' ? 'Case #' : 'Evidence ID: ';
                 
                 return `
-                    <div class="result-card" data-record-id="${rawId}">
+                    <div class="result-card" data-record-id="${dataId}">
                         <span class="result-type-badge ${record.type}">
                             <i data-lucide="${typeIcon}"></i>
                             ${typeText}
@@ -1067,8 +1067,9 @@
             // Reinitialize icons in modal
             lucide.createIcons();
             
-            // Show notification
-            showNotification(`📋 Viewing ${record.type}: ${escapedId}`, 'info');
+            // Use raw record.id for notification (showNotification will escape it)
+            // This prevents double-escaping
+            showNotification(`📋 Viewing ${record.type}: ${record.id}`, 'info');
         }
         
         function closeRecordModal() {

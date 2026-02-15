@@ -24,8 +24,8 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
     
-    <!-- Lucide Icons - Pinned to specific version for security -->
-    <script src="https://unpkg.com/lucide@0.344.0"></script>
+    <!-- Lucide Icons - Pinned to specific version with Subresource Integrity for security -->
+    <script src="https://unpkg.com/lucide@0.344.0" integrity="sha384-Kl3cQhNN0eOsiHm8vPcqgY72Lp6P/9GPQOJGfQnN/zTbtFTl4tYxQ+UqIsb0m0Y0" crossorigin="anonymous"></script>
 </head>
 
 <body>
@@ -301,8 +301,24 @@
         }
         
         function loadCasesData() {
-            // Try to load from localStorage first
-            const storedCases = JSON.parse(localStorage.getItem('cases') || '[]');
+            let storedCases = [];
+            
+            // Safely parse localStorage with try/catch to prevent crashes from corrupted data
+            try {
+                const casesFromStorage = localStorage.getItem('cases');
+                if (casesFromStorage) {
+                    storedCases = JSON.parse(casesFromStorage);
+                    if (!Array.isArray(storedCases)) {
+                        console.warn('Stored cases is not an array, resetting to empty array');
+                        storedCases = [];
+                    }
+                }
+            } catch (e) {
+                console.error('Failed to parse stored cases, using empty array:', e);
+                storedCases = [];
+                // Optionally clear corrupted data
+                localStorage.removeItem('cases');
+            }
             
             if (storedCases.length > 0) {
                 // Normalize status values from stored cases (could be uppercase from investigator dashboard)
@@ -493,6 +509,69 @@
                 document.getElementById('casesGridView').style.display = 'none';
                 document.getElementById('casesTableView').style.display = 'block';
             }
+            
+            // Attach event listeners after rendering
+            attachEventListeners();
+        }
+        
+        function attachEventListeners() {
+            // Attach click listeners for grid view cards
+            const cards = document.querySelectorAll('.case-vault-card');
+            cards.forEach(card => {
+                card.addEventListener('click', function() {
+                    const caseId = this.dataset.caseId;
+                    if (caseId) {
+                        viewCaseDetails(caseId);
+                    }
+                });
+            });
+            
+            // Attach click listeners for view buttons in grid view
+            const viewButtons = document.querySelectorAll('[data-action="view"]');
+            viewButtons.forEach(btn => {
+                btn.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    const caseId = this.dataset.caseId;
+                    if (caseId) {
+                        viewCaseDetails(caseId);
+                    }
+                });
+            });
+            
+            // Attach click listeners for add evidence buttons in grid view
+            const addButtons = document.querySelectorAll('[data-action="add-evidence"]');
+            addButtons.forEach(btn => {
+                btn.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    const caseId = this.dataset.caseId;
+                    if (caseId) {
+                        addEvidence(caseId);
+                    }
+                });
+            });
+            
+            // Attach click listeners for table rows
+            const tableRows = document.querySelectorAll('.cases-table tbody tr');
+            tableRows.forEach(row => {
+                row.addEventListener('click', function() {
+                    const caseId = this.dataset.caseId;
+                    if (caseId) {
+                        viewCaseDetails(caseId);
+                    }
+                });
+            });
+            
+            // Attach click listeners for table view buttons
+            const tableViewButtons = document.querySelectorAll('.cases-table tbody tr .btn-primary');
+            tableViewButtons.forEach(btn => {
+                btn.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    const caseId = this.dataset.caseId;
+                    if (caseId) {
+                        viewCaseDetails(caseId);
+                    }
+                });
+            });
         }
         
         function renderGridView(cases) {
@@ -537,8 +616,11 @@
                 const blockchainBadge = caseItem.blockchainVerified ? 
                     '<span class="blockchain-badge"><i data-lucide="shield"></i> Verified</span>' : '';
                 
+                // Use raw ID for data attributes (not escaped for HTML attribute)
+                const rawId = caseItem.id || '';
+                
                 return `
-                    <div class="case-vault-card" onclick="viewCaseDetails('${escapedId}')">
+                    <div class="case-vault-card" data-case-id="${rawId}">
                         <div class="case-header">
                             <div class="case-type-icon">
                                 <i data-lucide="${caseIcon}"></i>
@@ -595,11 +677,11 @@
                         </div>
                         
                         <div class="case-actions">
-                            <button class="btn btn-primary btn-sm" onclick="event.stopPropagation(); viewCaseDetails('${escapedId}')">
+                            <button class="btn btn-primary btn-sm" data-action="view" data-case-id="${rawId}">
                                 <i data-lucide="eye"></i>
                                 View Details
                             </button>
-                            <button class="btn btn-outline btn-sm" onclick="event.stopPropagation(); addEvidence('${escapedId}')">
+                            <button class="btn btn-outline btn-sm" data-action="add-evidence" data-case-id="${rawId}">
                                 <i data-lucide="plus"></i>
                                 Add Evidence
                             </button>
@@ -646,8 +728,11 @@
                 const blockchainBadge = caseItem.blockchainVerified ? 
                     '<span class="blockchain-badge" style="display: inline-flex;"><i data-lucide="shield"></i> Verified</span>' : '—';
                 
+                // Use raw ID for data attributes
+                const rawId = caseItem.id || '';
+                
                 return `
-                    <tr onclick="viewCaseDetails('${escapedId}')">
+                    <tr data-case-id="${rawId}">
                         <td style="font-family: 'JetBrains Mono', monospace; font-weight: 600;">${escapedId}</td>
                         <td style="font-weight: 600;">${escapedTitle}</td>
                         <td>
@@ -661,7 +746,7 @@
                         <td>${escapedEvidenceCount}</td>
                         <td>${blockchainBadge}</td>
                         <td>
-                            <button class="btn btn-primary btn-sm" onclick="event.stopPropagation(); viewCaseDetails('${escapedId}')">
+                            <button class="btn btn-primary btn-sm" data-case-id="${rawId}" data-action="view">
                                 <i data-lucide="eye"></i>
                             </button>
                         </td>
@@ -711,11 +796,17 @@
             currentPage = page;
             filterCases();
             
-            // Scroll to top of results
-            document.querySelector('.cases-grid-section').scrollIntoView({
-                behavior: 'smooth',
-                block: 'start'
-            });
+            // Scroll to the appropriate visible element based on current view
+            const scrollTarget = currentView === 'grid' 
+                ? document.getElementById('casesGridView')
+                : document.getElementById('casesTableView');
+            
+            if (scrollTarget) {
+                scrollTarget.scrollIntoView({
+                    behavior: 'smooth',
+                    block: 'start'
+                });
+            }
         }
         
         function changePage(direction) {
@@ -730,11 +821,17 @@
                 filterCases();
             }
             
-            // Scroll to top of results
-            document.querySelector('.cases-grid-section').scrollIntoView({
-                behavior: 'smooth',
-                block: 'start'
-            });
+            // Scroll to the appropriate visible element based on current view
+            const scrollTarget = currentView === 'grid' 
+                ? document.getElementById('casesGridView')
+                : document.getElementById('casesTableView');
+            
+            if (scrollTarget) {
+                scrollTarget.scrollIntoView({
+                    behavior: 'smooth',
+                    block: 'start'
+                });
+            }
         }
         
         function setViewMode(event, mode) {
@@ -749,11 +846,17 @@
             
             filterCases();
             
-            // Scroll to top of results
-            document.querySelector('.cases-grid-section').scrollIntoView({
-                behavior: 'smooth',
-                block: 'start'
-            });
+            // Scroll to the appropriate visible element based on current view
+            const scrollTarget = currentView === 'grid' 
+                ? document.getElementById('casesGridView')
+                : document.getElementById('casesTableView');
+            
+            if (scrollTarget) {
+                scrollTarget.scrollIntoView({
+                    behavior: 'smooth',
+                    block: 'start'
+                });
+            }
         }
         
         function toggleFilterMenu() {
@@ -776,10 +879,16 @@
         }
         
         function clearAllFilters() {
-            // Reset checkboxes
-            document.querySelectorAll('.filter-option input[type="checkbox"]').forEach(checkbox => {
+            // Reset status checkboxes to checked (show all statuses)
+            document.querySelectorAll('.filter-option input[type="checkbox"]:not(#filterVerified)').forEach(checkbox => {
                 checkbox.checked = true;
             });
+            
+            // Uncheck blockchain "verified only" checkbox
+            const verifiedCheckbox = document.getElementById('filterVerified');
+            if (verifiedCheckbox) {
+                verifiedCheckbox.checked = false;
+            }
             
             // Reset filters object - default to show all cases
             activeFilters = {
