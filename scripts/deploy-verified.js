@@ -13,7 +13,9 @@ async function main() {
   console.log('💰 Account balance:', balanceInMatic, 'MATIC\n');
 
   if (parseFloat(balanceInMatic) < 0.01) {
-    console.warn('⚠️  WARNING: Low balance. Get testnet MATIC from https://faucet.polygon.technology/\n');
+    console.warn(
+      '⚠️  WARNING: Low balance. Get testnet MATIC from https://faucet.polygon.technology/\n',
+    );
   }
 
   console.log('📦 Compiling contract...');

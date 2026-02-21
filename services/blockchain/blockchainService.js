@@ -34,10 +34,10 @@ class BlockchainService {
 
       const abi = JSON.parse(fs.readFileSync(abiPath, 'utf8'));
       this.contract = new ethers.Contract(contractAddress, abi, this.wallet);
-      
+
       this.network = await this.provider.getNetwork();
       this.initialized = true;
-      
+
       return true;
     } catch (error) {
       this.initialized = false;
@@ -50,7 +50,7 @@ class BlockchainService {
 
     const metadataString = JSON.stringify(metadata);
     const tx = await this.contract.storeEvidence(fileHash, metadataString);
-    
+
     const receipt = await tx.wait(2);
 
     return {

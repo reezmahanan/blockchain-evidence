@@ -26,13 +26,13 @@ async function main() {
 
   fs.writeFileSync(
     path.join(__dirname, '../deployment.json'),
-    JSON.stringify(deploymentData, null, 2)
+    JSON.stringify(deploymentData, null, 2),
   );
 
   const artifact = await hre.artifacts.readArtifact('EvidenceStorage');
   fs.writeFileSync(
     path.join(__dirname, '../contracts/EvidenceStorage.abi.json'),
-    JSON.stringify(artifact.abi, null, 2)
+    JSON.stringify(artifact.abi, null, 2),
   );
 
   console.log('\nDeployment complete!');

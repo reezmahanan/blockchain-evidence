@@ -10,28 +10,28 @@ const verifyAdmin = async (req, res, next) => {
   try {
     const { adminWallet } = req.body;
 
-        if (!adminWallet || !validateWalletAddress(adminWallet)) {
-            return res.status(400).json({ error: 'Invalid admin wallet address' });
-        }
+    if (!adminWallet || !validateWalletAddress(adminWallet)) {
+      return res.status(400).json({ error: 'Invalid admin wallet address' });
+    }
 
-        // Enforce admin check in production: only allow wallets that are registered as active admins
-        const { data: admin, error } = await supabase
-          .from('users')
-          .eq('wallet_address', adminWallet)
-          .eq('role', 'admin')
-          .eq('is_active', true)
-          .single();
+    // Enforce admin check in production: only allow wallets that are registered as active admins
+    const { data: admin, error } = await supabase
+      .from('users')
+      .eq('wallet_address', adminWallet)
+      .eq('role', 'admin')
+      .eq('is_active', true)
+      .single();
 
-        if (error || !admin) {
-          return res.status(403).json({ error: 'Access denied. Administrator privileges required' });
-        }
+    if (error || !admin) {
+      return res.status(403).json({ error: 'Access denied. Administrator privileges required' });
+    }
 
-        req.admin = admin;
-        next();
-      } catch (error) {
-        console.error('Admin verification error:', error);
-        res.status(500).json({ error: 'Internal server error' });
-      }
+    req.admin = admin;
+    next();
+  } catch (error) {
+    console.error('Admin verification error:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
 };
 
 // Log admin actions

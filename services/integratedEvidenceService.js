@@ -37,7 +37,7 @@ class IntegratedEvidenceService {
       try {
         results.blockchain = await blockchainService.storeEvidence(
           results.hash,
-          blockchainMetadata
+          blockchainMetadata,
         );
       } catch (blockchainError) {
         results.errors.push({ service: 'Blockchain', error: blockchainError.message });
@@ -168,7 +168,7 @@ class IntegratedEvidenceService {
 
       if (evidence.blockchain_tx_hash) {
         proof.verification_urls.blockchain = blockchainService.getExplorerUrl(
-          evidence.blockchain_tx_hash
+          evidence.blockchain_tx_hash,
         );
       }
 

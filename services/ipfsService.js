@@ -45,11 +45,14 @@ class IPFSService {
   }
 
   async pinStatus(cid) {
-    const response = await axios.get(`https://api.pinata.cloud/pinning/pinJobs?ipfs_pin_hash=${cid}`, {
-      headers: {
-        Authorization: `Bearer ${this.pinataJWT}`,
+    const response = await axios.get(
+      `https://api.pinata.cloud/pinning/pinJobs?ipfs_pin_hash=${cid}`,
+      {
+        headers: {
+          Authorization: `Bearer ${this.pinataJWT}`,
+        },
       },
-    });
+    );
     return response.data;
   }
 

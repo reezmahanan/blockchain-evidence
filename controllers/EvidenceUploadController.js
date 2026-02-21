@@ -1,0 +1,98 @@
+const { validateWalletAddress } = require('../middleware/verifyAdmin');
+const integratedEvidenceService = require('../services/integratedEvidenceService');
+const blockchainService = require('../services/blockchain/blockchainService');
+const ipfsStorageService = require('../services/storage/ipfsStorageService');
+
+// Enhanced Evidence Upload with REAL Blockchain & IPFS
+const uploadEvidence = async (req, res) => {
+  try {
+    const { caseId, type, description, location, collectionDate, uploadedBy } = req.body;
+    const file = req.file;
+
+    if (!file) {
+      return res.status(400).json({ error: 'No file uploaded' });
+    }
+
+    if (!caseId || !type || !uploadedBy) {
+      return res.status(400).json({ error: 'Case ID, type, and uploader are required' });
+    }
+
+    if (!validateWalletAddress(uploadedBy)) {
+      return res.status(400).json({ error: 'Invalid uploader wallet address' });
+    }
+
+    const allowedTypes = {
+      'application/pdf': 100,
+      'image/jpeg': 50,
+      'image/jpg': 50,
+      'image/png': 50,
+      'image/gif': 25,
+      'video/mp4': 500,
+      'video/avi': 500,
+      'video/mov': 500,
+      'audio/mp3': 100,
+      'audio/wav': 200,
+      'audio/m4a': 100,
+      'application/msword': 50,
+      'application/vnd.openxmlformats-officedocument.wordprocessingml.document': 50,
+      'text/plain': 10,
+    };
+
+    const maxSize = allowedTypes[file.mimetype];
+    if (!maxSize) {
+      return res.status(400).json({
+        error: `File type ${file.mimetype} not supported`,
+        supportedTypes: Object.keys(allowedTypes),
+      });
+    }
+
+    const maxSizeBytes = maxSize * 1024 * 1024;
+    if (file.size > maxSizeBytes) {
+      return res.status(400).json({
+        error: `File too large. Maximum size for ${file.mimetype} is ${maxSize}MB`,
+        fileSize: file.size,
+        maxSize: maxSizeBytes,
+      });
+    }
+
+    const metadata = {
+      caseId,
+      type,
+      description,
+      location,
+      collectionDate,
+      mimeType: file.mimetype,
+    };
+
+    const results = await integratedEvidenceService.uploadEvidence(
+      file.buffer,
+      file.originalname,
+      metadata,
+      uploadedBy,
+    );
+
+    res.json({
+      success: true,
+      evidence: {
+        ...results.database,
+        explorerUrl: results.blockchain
+          ? blockchainService.getExplorerUrl(results.blockchain.txHash)
+          : null,
+        ipfsUrl: results.ipfs ? ipfsStorageService.getGatewayUrl(results.ipfs.cid) : null,
+      },
+      blockchain: results.blockchain,
+      ipfs: results.ipfs,
+      message:
+        results.errors.length > 0
+          ? `Evidence uploaded with warnings: ${results.errors.map((e) => e.error).join(', ')}`
+          : 'Evidence uploaded successfully to database, blockchain, and IPFS',
+      warnings: results.errors,
+    });
+  } catch (error) {
+    res.status(500).json({ error: 'Upload failed: ' + error.message });
+  }
+};
+
+module.exports = {
+  uploadEvidence,
+};

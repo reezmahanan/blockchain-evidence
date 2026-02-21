@@ -1,5 +1,6 @@
 const { supabase } = require('../config');
 const { validateWalletAddress } = require('../middleware/verifyAdmin');
+const { createNotification } = require('../services/notificationService');
 
 const getRetentionPolicies = async (req, res) => {
   try {
@@ -65,4 +66,156 @@ const exportTimelinePdf = async (req, res) => {
   }
 };
 
-module.exports = { getRetentionPolicies, createRetentionPolicy, exportTimelinePdf };
+// Get evidence with expiry information
+const getEvidenceExpiry = async (req, res) => {
+  try {
+    const { filter = 'all' } = req.query;
+    let query = supabase.from('evidence').select('*');
+
+    const now = new Date();
+    const thirtyDaysFromNow = new Date(now.getTime() + 30 * 24 * 60 * 60 * 1000);
+    const sevenDaysFromNow = new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000);
+
+    switch (filter) {
+      case 'expired':
+        query = query.lt('expiry_date', now.toISOString()).eq('legal_hold', false);
+        break;
+      case '30days':
+        query = query
+          .lte('expiry_date', thirtyDaysFromNow.toISOString())
+          .gte('expiry_date', now.toISOString());
+        break;
+      case '7days':
+        query = query
+          .lte('expiry_date', sevenDaysFromNow.toISOString())
+          .gte('expiry_date', now.toISOString());
+        break;
+      case 'legal_hold':
+        query = query.eq('legal_hold', true);
+        break;
+    }
+
+    const { data: evidence, error } = await query.order('expiry_date', { ascending: true });
+    if (error) throw error;
+
+    res.json({ success: true, evidence });
+  } catch (error) {
+    console.error('Get evidence expiry error:', error);
+    res.status(500).json({ error: 'Failed to get evidence expiry information' });
+  }
+};
+
+// Set legal hold on evidence
+const setLegalHold = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { legalHold, userWallet } = req.body;
+
+    if (!validateWalletAddress(userWallet)) {
+      return res.status(400).json({ error: 'Invalid wallet address' });
+    }
+
+    const { error } = await supabase
+      .from('evidence')
+      .update({ legal_hold: legalHold })
+      .eq('id', id);
+
+    if (error) throw error;
+
+    await supabase.from('activity_logs').insert({
+      user_id: userWallet,
+      action: legalHold ? 'legal_hold_set' : 'legal_hold_removed',
+      details: `Evidence ID: ${id}`,
+      timestamp: new Date().toISOString(),
+    });
+
+    res.json({ success: true });
+  } catch (error) {
+    console.error('Set legal hold error:', error);
+    res.status(500).json({ error: 'Failed to set legal hold' });
+  }
+};
+
+// Apply retention policy to multiple evidence
+const bulkRetentionPolicy = async (req, res) => {
+  try {
+    const { policyId, evidenceIds, userWallet } = req.body;
+
+    if (!validateWalletAddress(userWallet)) {
+      return res.status(400).json({ error: 'Invalid wallet address' });
+    }
+
+    const { data: policy, error: policyError } = await supabase
+      .from('retention_policies')
+      .select('*')
+      .eq('id', policyId)
+      .single();
+
+    if (policyError || !policy) {
+      return res.status(404).json({ error: 'Retention policy not found' });
+    }
+
+    const expiryDate = new Date();
+    expiryDate.setDate(expiryDate.getDate() + policy.retention_days);
+
+    const { error } = await supabase
+      .from('evidence')
+      .update({
+        retention_policy_id: policyId,
+        expiry_date: expiryDate.toISOString(),
+      })
+      .in('id', evidenceIds);
+
+    if (error) throw error;
+
+    res.json({ success: true, updated: evidenceIds.length });
+  } catch (error) {
+    console.error('Bulk retention policy error:', error);
+    res.status(500).json({ error: 'Failed to apply retention policy' });
+  }
+};
+
+// Check for expiring evidence and send notifications
+const checkExpiry = async (req, res) => {
+  try {
+    const now = new Date();
+    const thirtyDaysFromNow = new Date(now.getTime() + 30 * 24 * 60 * 60 * 1000);
+
+    let notificationsSent = 0;
+
+    const { data: expiring30, error: error30 } = await supabase
+      .from('evidence')
+      .select('*')
+      .lte('expiry_date', thirtyDaysFromNow.toISOString())
+      .gte('expiry_date', now.toISOString())
+      .eq('legal_hold', false);
+
+    if (expiring30) {
+      for (const evidence of expiring30) {
+        await createNotification(
+          evidence.submitted_by,
+          'Evidence Expiry Warning',
+          `Evidence "${evidence.title}" will expire in 30 days`,
+          'system',
+          { evidence_id: evidence.id, expiry_date: evidence.expiry_date },
+        );
+        notificationsSent++;
+      }
+    }
+
+    res.json({ success: true, notifications_sent: notificationsSent });
+  } catch (error) {
+    console.error('Check expiry error:', error);
+    res.status(500).json({ error: 'Failed to check expiring evidence' });
+  }
+};
+
+module.exports = {
+  getRetentionPolicies,
+  createRetentionPolicy,
+  exportTimelinePdf,
+  getEvidenceExpiry,
+  setLegalHold,
+  bulkRetentionPolicy,
+  checkExpiry,
+};

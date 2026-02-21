@@ -15,14 +15,14 @@ const supabase = createClient(supabaseUrl, supabaseKey);
 const PORT = process.env.PORT || 3000;
 
 const allowedRoles = [
-    'public_viewer',
-    'investigator',
-    'forensic_analyst',
-    'legal_professional',
-    'court_official',
-    'evidence_manager',
-    'auditor'
-    // 'admin' intentionally excluded from public registration
+  'public_viewer',
+  'investigator',
+  'forensic_analyst',
+  'legal_professional',
+  'court_official',
+  'evidence_manager',
+  'auditor',
+  // 'admin' intentionally excluded from public registration
 ];
 
 // Store connected users for real-time notifications

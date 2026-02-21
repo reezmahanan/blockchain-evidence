@@ -2,27 +2,31 @@ const express = require('express');
 const router = express.Router();
 const { exportLimiter, uploadLimiter, verificationLimiter } = require('../middleware/rateLimiters');
 const upload = require('../middleware/upload');
+const { uploadEvidence } = require('../controllers/EvidenceUploadController');
 const {
-  uploadEvidence,
   downloadEvidence,
   bulkExport,
   getDownloadHistory,
   getAllEvidence,
   getEvidenceById,
+  getEvidenceByCase,
+} = require('../controllers/EvidenceDownloadController');
+const {
   verifyEvidenceHash,
   getBlockchainProof,
   verifyIntegrity,
   generateVerificationCertificate,
   publicVerify,
   getVerificationHistory,
+  compareEvidence,
+  createComparisonReport,
+} = require('../controllers/EvidenceVerificationController');
+const {
   getEvidenceExpiry,
   setLegalHold,
   bulkRetentionPolicy,
   checkExpiry,
-  compareEvidence,
-  createComparisonReport,
-  getEvidenceByCase,
-} = require('../controllers/evidenceController');
+} = require('../controllers/retentionController');
 
 // ── Static paths MUST come before /evidence/:id to avoid param conflicts ────
 

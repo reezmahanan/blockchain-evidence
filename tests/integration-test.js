@@ -108,9 +108,7 @@ async function testBlockchainIntegration() {
 
   if (global.testEvidenceId) {
     await runTest('Evidence Verification', async () => {
-      const response = await axios.get(
-        `${BASE_URL}/api/evidence/${global.testEvidenceId}/verify`
-      );
+      const response = await axios.get(`${BASE_URL}/api/evidence/${global.testEvidenceId}/verify`);
       if (!response.data.blockchainVerified) {
         throw new Error('Blockchain verification failed');
       }
@@ -118,7 +116,7 @@ async function testBlockchainIntegration() {
 
     await runTest('Blockchain Proof', async () => {
       const response = await axios.get(
-        `${BASE_URL}/api/evidence/${global.testEvidenceId}/blockchain-proof`
+        `${BASE_URL}/api/evidence/${global.testEvidenceId}/blockchain-proof`,
       );
       if (!response.data.proof.blockchain_tx_hash) {
         throw new Error('Blockchain proof missing transaction hash');
@@ -148,7 +146,9 @@ async function testBlockchainIntegration() {
   console.log('='.repeat(50));
   console.log(`✅ Passed: ${results.passed}`);
   console.log(`❌ Failed: ${results.failed}`);
-  console.log(`📈 Success Rate: ${((results.passed / (results.passed + results.failed)) * 100).toFixed(1)}%`);
+  console.log(
+    `📈 Success Rate: ${((results.passed / (results.passed + results.failed)) * 100).toFixed(1)}%`,
+  );
   console.log('='.repeat(50) + '\n');
 
   if (results.failed > 0) {

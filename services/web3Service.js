@@ -84,7 +84,7 @@ class Web3Service {
     await this.initialize();
     const gasEstimate = await this.contract.storeEvidence.estimateGas(
       fileHash,
-      JSON.stringify(metadata)
+      JSON.stringify(metadata),
     );
     return gasEstimate.toString();
   }

@@ -54,7 +54,7 @@ class IPFSStorageService {
               Authorization: `Bearer ${this.pinataJWT}`,
             },
             timeout: 60000,
-          }
+          },
         );
 
         return {
@@ -80,7 +80,7 @@ class IPFSStorageService {
     }
 
     const url = `${this.gateway}${cid}`;
-    
+
     try {
       const response = await axios.get(url, {
         responseType: 'arraybuffer',
@@ -104,7 +104,7 @@ class IPFSStorageService {
           headers: {
             Authorization: `Bearer ${this.pinataJWT}`,
           },
-        }
+        },
       );
       return response.data;
     } catch (error) {
@@ -141,7 +141,7 @@ class IPFSStorageService {
           headers: {
             Authorization: `Bearer ${this.pinataJWT}`,
           },
-        }
+        },
       );
       return response.data;
     } catch (error) {

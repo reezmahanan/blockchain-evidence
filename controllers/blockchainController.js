@@ -6,7 +6,12 @@ const { supabase } = require('../config');
 const getSystemStatus = async (req, res) => {
   try {
     const status = await integratedEvidenceService.getSystemStatus();
-    res.json({ success: true, status: JSON.parse(JSON.stringify(status, (_, v) => typeof v === 'bigint' ? v.toString() : v)) });
+    res.json({
+      success: true,
+      status: JSON.parse(
+        JSON.stringify(status, (_, v) => (typeof v === 'bigint' ? v.toString() : v)),
+      ),
+    });
   } catch (error) {
     res.status(500).json({ error: 'Failed to get system status: ' + error.message });
   }
