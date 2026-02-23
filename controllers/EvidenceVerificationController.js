@@ -14,7 +14,7 @@ const authorizeAdminOrAuditor = async (wallet, res) => {
   const { data: user, error: userError } = await supabase
     .from('users')
     .select('id, role')
-    .eq('wallet_address', wallet)
+    .eq('wallet_address', wallet.toLowerCase())
     .eq('is_active', true)
     .single();
 
@@ -163,22 +163,21 @@ const verifyIntegrity = async (req, res) => {
       };
     }
 
-    // Audit log isolated so failure doesn't turn a successful verification into a 500
-    try {
-      await supabase.from('activity_logs').insert({
-        user_id: 'public_verification',
-        action: 'evidence_verification',
-        details: JSON.stringify({
-          fileName,
-          fileSize,
-          calculatedHash: calculatedHash.substring(0, 16) + '...',
-          verified,
-          evidenceId,
-        }),
-        timestamp: new Date().toISOString(),
-      });
-    } catch (logError) {
-      console.error('Failed to log verification activity:', logError);
+    // Audit log (check returned error since Supabase does not throw on DB failures)
+    const { error: auditLogError } = await supabase.from('activity_logs').insert({
+      user_id: 'public_verification',
+      action: 'evidence_verification',
+      details: JSON.stringify({
+        fileName,
+        fileSize,
+        calculatedHash: calculatedHash.substring(0, 16) + '...',
+        verified,
+        evidenceId,
+      }),
+      timestamp: new Date().toISOString(),
+    });
+    if (auditLogError) {
+      console.error('Failed to log verification activity:', auditLogError);
     }
 
     res.json({
@@ -407,16 +406,15 @@ const createComparisonReport = async (req, res) => {
       return res.status(500).json({ error: 'Failed to save comparison report' });
     }
 
-    // Audit log isolated so failure doesn't mask report success
-    try {
-      await supabase.from('activity_logs').insert({
-        user_id: generatedBy,
-        action: 'evidence_comparison_report_generated',
-        details: `Generated comparison report for ${sanitizedIds.length} evidence items`,
-        timestamp: new Date().toISOString(),
-      });
-    } catch (logError) {
-      console.error('Failed to log comparison report activity:', logError);
+    // Audit log (check returned error since Supabase does not throw on DB failures)
+    const { error: auditLogError } = await supabase.from('activity_logs').insert({
+      user_id: generatedBy,
+      action: 'evidence_comparison_report_generated',
+      details: `Generated comparison report for ${sanitizedIds.length} evidence items`,
+      timestamp: new Date().toISOString(),
+    });
+    if (auditLogError) {
+      console.error('Failed to log comparison report activity:', auditLogError);
     }
 
     res.json({

@@ -27,13 +27,16 @@ const walletLogin = async (req, res) => {
       return res.status(401).json({ error: 'Wallet address not registered' });
     }
 
-    // Log login activity
-    await supabase.from('activity_logs').insert({
+    // Log login activity (check returned error since Supabase does not throw on DB failures)
+    const { error: logError } = await supabase.from('activity_logs').insert({
       user_id: user.id,
       action: 'wallet_login',
       details: JSON.stringify({ auth_type: 'wallet' }),
       timestamp: new Date().toISOString(),
     });
+    if (logError) {
+      console.error('Failed to log wallet login activity:', logError);
+    }
 
     res.json({
       success: true,
@@ -86,17 +89,21 @@ const emailLogin = async (req, res) => {
     }
 
     // Block unverified email accounts (catches false, null, and undefined for legacy rows)
+    // Intentionally returns the same generic error to prevent credential enumeration
     if (user.email_verified !== true) {
-      return res.status(401).json({ error: 'Please verify your email before logging in' });
+      return res.status(401).json({ error: 'Invalid email or password' });
     }
 
-    // Log login activity
-    await supabase.from('activity_logs').insert({
+    // Log login activity (check returned error since Supabase does not throw on DB failures)
+    const { error: logError } = await supabase.from('activity_logs').insert({
       user_id: user.id,
       action: 'email_login',
       details: JSON.stringify({ auth_type: 'email' }),
       timestamp: new Date().toISOString(),
     });
+    if (logError) {
+      console.error('Failed to log email login activity:', logError);
+    }
 
     res.json({
       success: true,
@@ -131,6 +138,12 @@ const emailRegister = async (req, res) => {
     // TODO: integrate breached-password check (e.g., HaveIBeenPwned API / zxcvbn scoring)
     if (password.length < 8) {
       return res.status(400).json({ error: 'Password must be at least 8 characters long' });
+    }
+
+    // Lightweight email format validation
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      return res.status(400).json({ error: 'Invalid email address format' });
     }
 
     if (role === 'admin') {
@@ -201,8 +214,8 @@ const emailRegister = async (req, res) => {
 
     console.log('User created successfully:', newUser.id);
 
-    // Log registration activity
-    await supabase.from('activity_logs').insert({
+    // Log registration activity (check returned error since Supabase does not throw on DB failures)
+    const { error: logError } = await supabase.from('activity_logs').insert({
       user_id: newUser.id,
       action: 'email_registration',
       details: JSON.stringify({
@@ -212,6 +225,9 @@ const emailRegister = async (req, res) => {
       }),
       timestamp: new Date().toISOString(),
     });
+    if (logError) {
+      console.error('Failed to log email registration activity:', logError);
+    }
 
     res.status(201).json({
       success: true,
@@ -311,8 +327,8 @@ const walletRegister = async (req, res) => {
 
     console.log('Wallet user created successfully:', newUser.id);
 
-    // Log registration activity
-    await supabase.from('activity_logs').insert({
+    // Log registration activity (check returned error since Supabase does not throw on DB failures)
+    const { error: logError } = await supabase.from('activity_logs').insert({
       user_id: newUser.id,
       action: 'wallet_registration',
       details: JSON.stringify({
@@ -322,6 +338,9 @@ const walletRegister = async (req, res) => {
       }),
       timestamp: new Date().toISOString(),
     });
+    if (logError) {
+      console.error('Failed to log wallet registration activity:', logError);
+    }
 
     res.status(201).json({
       success: true,
@@ -383,16 +402,15 @@ const verifyEmail = async (req, res) => {
       return res.status(500).json({ error: 'Failed to verify email' });
     }
 
-    // Audit log for email verification (isolated so failure doesn't mask success)
-    try {
-      await supabase.from('activity_logs').insert({
-        user_id: user.id,
-        action: 'email_verified',
-        details: JSON.stringify({ user_id: user.id, verified: true }),
-        timestamp: new Date().toISOString(),
-      });
-    } catch (logError) {
-      console.error('Failed to log email verification:', logError);
+    // Audit log for email verification (check returned error since Supabase does not throw on DB failures)
+    const { error: auditLogError } = await supabase.from('activity_logs').insert({
+      user_id: user.id,
+      action: 'email_verified',
+      details: JSON.stringify({ user_id: user.id, verified: true }),
+      timestamp: new Date().toISOString(),
+    });
+    if (auditLogError) {
+      console.error('Failed to log email verification:', auditLogError);
     }
 
     res.json({ success: true, message: 'Email verified successfully' });

@@ -131,6 +131,10 @@ const setLegalHold = async (req, res) => {
     const { id } = req.params;
     const { legalHold, userWallet } = req.body;
 
+    if (typeof legalHold !== 'boolean') {
+      return res.status(400).json({ error: 'legalHold must be a boolean value' });
+    }
+
     if (!validateWalletAddress(userWallet)) {
       return res.status(400).json({ error: 'Invalid wallet address' });
     }
@@ -173,16 +177,15 @@ const setLegalHold = async (req, res) => {
 
     if (error) throw error;
 
-    // Log in a separate try/catch so audit failures don't affect the HTTP response
-    try {
-      await supabase.from('activity_logs').insert({
-        user_id: userWallet,
-        action: legalHold ? 'legal_hold_set' : 'legal_hold_removed',
-        details: `Evidence ID: ${id}`,
-        timestamp: new Date().toISOString(),
-      });
-    } catch (logError) {
-      console.error('Failed to log legal hold action:', logError);
+    // Audit log (check returned error since Supabase does not throw on DB failures)
+    const { error: auditLogError } = await supabase.from('activity_logs').insert({
+      user_id: userWallet,
+      action: legalHold ? 'legal_hold_set' : 'legal_hold_removed',
+      details: `Evidence ID: ${id}`,
+      timestamp: new Date().toISOString(),
+    });
+    if (auditLogError) {
+      console.error('Failed to log legal hold action:', auditLogError);
     }
 
     res.json({ success: true });
@@ -220,6 +223,10 @@ const bulkRetentionPolicy = async (req, res) => {
       return res.status(400).json({ error: 'Invalid or empty evidenceIds' });
     }
 
+    if (!policyId) {
+      return res.status(400).json({ error: 'policyId is required' });
+    }
+
     const { data: policy, error: policyError } = await supabase
       .from('retention_policies')
       .select('*')
@@ -247,20 +254,19 @@ const bulkRetentionPolicy = async (req, res) => {
 
     if (error) throw error;
 
-    // Audit log isolated so failure doesn't affect bulk update response
-    try {
-      await supabase.from('activity_logs').insert({
-        user_id: userWallet,
-        action: 'bulk_retention_policy_applied',
-        details: JSON.stringify({
-          policy_id: policyId,
-          evidence_ids: evidenceIds,
-          affected_count: count || 0,
-        }),
-        timestamp: new Date().toISOString(),
-      });
-    } catch (logError) {
-      console.error('Failed to log bulk retention policy action:', logError);
+    // Audit log (check returned error since Supabase does not throw on DB failures)
+    const { error: auditLogError } = await supabase.from('activity_logs').insert({
+      user_id: userWallet,
+      action: 'bulk_retention_policy_applied',
+      details: JSON.stringify({
+        policy_id: policyId,
+        evidence_ids: evidenceIds,
+        affected_count: count || 0,
+      }),
+      timestamp: new Date().toISOString(),
+    });
+    if (auditLogError) {
+      console.error('Failed to log bulk retention policy action:', auditLogError);
     }
 
     res.json({ success: true, updated: count || 0 });
